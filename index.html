@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Monsieur Restaurant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root {
+      --bg:        #0c0a08;
+      --bg2:       #141210;
+      --bg3:       #1e1a16;
+      --gold:      #c9a84c;
+      --gold-light:#e8c96a;
+      --cream:     #f0e6d3;
+      --muted:     #7a6e63;
+      --border:    rgba(201,168,76,0.18);
+      --red:       #c94c4c;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 260px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 28px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80') center/cover no-repeat;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(12,10,8,.35) 0%, rgba(12,10,8,.92) 80%);
+    }
+    .hero-content { position: relative; z-index: 1; text-align: center; }
+    .logo-line {
+      font-family: 'Playfair Display', serif;
+      font-size: 11px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: var(--gold-light);
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+
+    /* ── NAV TABS ── */
+    .nav {
+      display: flex;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 14px 4px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'Jost', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      transition: color .25s;
+    }
+    .nav-btn.active { color: var(--gold); }
+    .nav-btn::after {
+      content: '';
+      position: absolute; bottom: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform .25s;
+    }
+    .nav-btn.active::after { transform: scaleX(1); }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 0 0 100px; animation: fadeUp .35s ease; }
+    .page.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      padding: 22px 20px 6px;
+      color: var(--cream);
+    }
+    .section-title span { color: var(--gold); }
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 20px 18px;
+    }
+
+    /* ── MENU CATEGORIES ── */
+    .cat-scroll {
+      display: flex;
+      gap: 10px;
+      padding: 0 20px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      flex-shrink: 0;
+      padding: 7px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: none;
+      color: var(--muted);
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cat-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--bg);
+      font-weight: 500;
+    }
+
+    /* ── MENU ITEMS ── */
+    .menu-list { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
+    .menu-card {
+      display: flex;
+      gap: 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .menu-card:active { border-color: var(--gold); }
+    .menu-img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .menu-info {
+      flex: 1;
+      padding: 14px 14px 14px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .menu-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .menu-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+      flex: 1;
+    }
+    .menu-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .menu-price {
+      font-size: 15px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+    .add-btn {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--gold);
+      background: none;
+      color: var(--gold);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .add-btn:active { background: var(--gold); color: var(--bg); }
+    .qty-control {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .qty-num {
+      font-size: 15px;
+      font-weight: 500;
+      min-width: 18px;
+      text-align: center;
+    }
+    .qty-btn {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--cream);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .qty-btn:active { border-color: var(--gold); color: var(--gold); }
+
+    /* ── CART BADGE ── */
+    .cart-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--bg);
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* ── BOOKING ── */
+    .book-form { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .form-input, .form-select {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--gold); }
+    .form-select option { background: #1e1a16; }
+
+    .guest-row { display: flex; gap: 10px; }
+    .guest-btn {
+      flex: 1;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: none;
+      color: var(--muted);
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .guest-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--bg);
+      font-weight: 500;
+    }
+
+    .time-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .time-btn {
+      padding: 10px 4px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: none;
+      color: var(--muted);
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .time-btn.active {
+      background: var(--bg3);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .time-btn.disabled {
+      opacity: .3;
+      pointer-events: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border: none;
+      border-radius: 14px;
+      color: var(--bg);
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    .submit-btn:active { opacity: .85; transform: scale(.99); }
+    .submit-btn:disabled { opacity: .4; pointer-events: none; }
+
+    /* ── ORDER PAGE ── */
+    .order-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+    .order-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .order-item-img {
+      width: 50px; height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .order-item-info { flex: 1; }
+    .order-item-name { font-family: 'Playfair Display', serif; font-size: 15px; }
+    .order-item-qty { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .order-item-price { color: var(--gold); font-size: 14px; font-weight: 500; }
+
+    .order-summary {
+      margin: 16px 20px 0;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: var(--muted);
+      padding: 4px 0;
+    }
+    .summary-row.total {
+      font-size: 17px;
+      font-family: 'Playfair Display', serif;
+      color: var(--cream);
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+    .summary-row.total span:last-child { color: var(--gold); }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      border: 1px solid var(--gold);
+      color: var(--cream);
+      padding: 11px 22px;
+      border-radius: 30px;
+      font-size: 13px;
+      letter-spacing: .5px;
+      opacity: 0;
+      transition: all .3s;
+      z-index: 1000;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── SUCCESS ── */
+    .success-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(12,10,8,.96);
+      z-index: 500;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+    .success-overlay.show { display: flex; animation: fadeUp .4s ease; }
+    .success-icon { font-size: 64px; margin-bottom: 20px; }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: var(--gold);
+    }
+    .success-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    /* ── ABOUT ── */
+    .about-section { padding: 0 20px; }
+    .about-img {
+      width: 100%; height: 180px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+    .about-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #c8bfb3;
+      margin-bottom: 20px;
+    }
+    .info-cards { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .info-card {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .info-icon { font-size: 22px; width: 30px; text-align: center; }
+    .info-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+    .info-val { font-size: 14px; margin-top: 2px; }
+
+    /* scrollable bottom padding */
+    .pb { height: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="logo-line">Fine Dining</div>
+    <h1 class="hero-title">Monsieur</h1>
+    <p class="hero-sub">cuisine française</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" data-page="menu">Меню</button>
+  <button class="nav-btn" data-page="booking">Бронь</button>
+  <button class="nav-btn" data-page="order">Заказ <span class="cart-badge" id="cartBadge" style="display:none">0</span></button>
+  <button class="nav-btn" data-page="about">О нас</button>
+</nav>
+
+<!-- ═══ PAGE: MENU ═══ -->
+<div id="page-menu" class="page active">
+  <div class="section-title">Наше <span>Меню</span></div>
+  <div class="section-divider"></div>
+  <div class="cat-scroll">
+    <button class="cat-btn active" data-cat="all">Всё</button>
+    <button class="cat-btn" data-cat="starters">Закуски</button>
+    <button class="cat-btn" data-cat="mains">Основные</button>
+    <button class="cat-btn" data-cat="desserts">Десерты</button>
+    <button class="cat-btn" data-cat="drinks">Напитки</button>
+  </div>
+  <div class="menu-list" id="menuList"></div>
+  <div class="pb"></div>
+</div>
+
+<!-- ═══ PAGE: BOOKING ═══ -->
+<div id="page-booking" class="page">
+  <div class="section-title">Забронировать <span>столик</span></div>
+  <div class="section-divider"></div>
+  <div class="book-form">
+    <div class="form-group">
+      <label class="form-label">Ваше имя</label>
+      <input id="bName" type="text" class="form-input" placeholder="Иван Иванов" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Телефон</label>
+      <input id="bPhone" type="tel" class="form-input" placeholder="+7 900 000-00-00" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Дата</label>
+      <input id="bDate" type="date" class="form-input" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Время</label>
+      <div class="time-grid" id="timeGrid"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Количество гостей</label>
+      <div class="guest-row" id="guestRow"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Пожелания к столику</label>
+      <textarea id="bComment" class="form-input" rows="3" placeholder="Например: тихий угол, окно, высокий стул для ребёнка…" style="resize:none;"></textarea>
+    </div>
+    <button class="submit-btn" id="bookBtn" onclick="submitBooking()">Забронировать</button>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- ═══ PAGE: ORDER ═══ -->
+<div id="page-order" class="page">
+  <div class="section-title">Ваш <span>Заказ</span></div>
+  <div class="section-divider"></div>
+  <div id="orderContent"></div>
+  <div class="pb"></div>
+</div>
+
+<!-- ═══ PAGE: ABOUT ═══ -->
+<div id="page-about" class="page">
+  <div class="section-title">О <span>ресторане</span></div>
+  <div class="section-divider"></div>
+  <div class="about-section">
+    <img class="about-img" src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Зал ресторана" />
+    <p class="about-text">
+      Monsieur — это не просто ресторан. Это пространство, где каждое блюдо рассказывает историю. Мы вдохновлены традицией французской кухни и стремимся к тому, чтобы каждый гость чувствовал себя особенным гостем Парижа.
+    </p>
+    <p class="about-text">
+      Шеф-повар Пьер Лефевр собрал команду из лучших кулинаров Европы. Наши продукты поставляются напрямую с ферм Прованса и Бургундии.
+    </p>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-label">Адрес</div>
+          <div class="info-val">Москва, ул. Кузнецкий Мост, 7</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🕐</div>
+        <div>
+          <div class="info-label">Часы работы</div>
+          <div class="info-val">Пн–Пт: 12:00 – 23:00 &nbsp;|&nbsp; Сб–Вс: 11:00 – 00:00</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📞</div>
+        <div>
+          <div class="info-label">Телефон</div>
+          <div class="info-val">+7 (495) 123-45-67</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⭐</div>
+        <div>
+          <div class="info-label">Рейтинг</div>
+          <div class="info-val">4.9 / 5 · Michelin Recommended 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pb"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">✨</div>
+  <div class="success-title" id="successTitle">Готово!</div>
+  <div class="success-text" id="successText"></div>
+  <button class="submit-btn" style="max-width:260px" onclick="closeSuccess()">Отлично!</button>
+</div>
+
+<script>
+// ── DATA ──
+const MENU = [
+  { id:1, cat:'starters', name:'Тартар из тунца', desc:'Свежий тунец, авокадо, икра тобико, лимонная заправка', price:890, img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&q=80' },
+  { id:2, cat:'starters', name:'Луковый суп', desc:'Карамелизированный лук, грюйер, хрустящий крутон', price:590, img:'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80' },
+  { id:3, cat:'starters', name:'Фуа-гра', desc:'Утиная печень, карамелизированная груша, бриошь', price:1490, img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
+  { id:4, cat:'mains',    name:'Утиная грудка', desc:'Magret de canard, соус из красного вина, тимьян', price:1890, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80' },
+  { id:5, cat:'mains',    name:'Рыба с овощами', desc:'Дорадо на гриле, прованские овощи, базиликовое масло', price:1650, img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80' },
+  { id:6, cat:'mains',    name:'Говяжье филе', desc:'Стейк мирового уровня, картофельное пюре, трюфельный соус', price:2890, img:'https://images.unsplash.com/photo-1558030006-450675393462?w=400&q=80' },
+  { id:7, cat:'mains',    name:'Риссото с грибами', desc:'Портобелло, пармезан, белые грибы, трюфельное масло', price:1290, img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80' },
+  { id:8, cat:'desserts', name:'Крем-брюле', desc:'Классический, с ванилью Бурбон', price:490, img:'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400&q=80' },
+  { id:9, cat:'desserts', name:'Тарт Татен', desc:'Яблочный перевёрнутый тарт, крем-фреш', price:550, img:'https://images.unsplash.com/photo-1559622214-f8a9850965bb?w=400&q=80' },
+  { id:10,cat:'desserts', name:'Шоколадный фондан', desc:'Горький шоколад 72%, ванильное мороженое', price:620, img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80' },
+  { id:11,cat:'drinks',   name:'Бокал Бургундии', desc:'Pinot Noir, домен Жан Гиво, 2020', price:890, img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
+  { id:12,cat:'drinks',   name:'Лимонад Monsieur', desc:'Лайм, базилик, мята, газированная вода', price:390, img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80' },
+  { id:13,cat:'drinks',   name:'Кофе по-французски', desc:'Double espresso, горький шоколад, пена', price:350, img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80' },
+];
+
+const TIMES = ['12:00','13:00','14:00','15:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+const BOOKED = ['15:00','20:00'];
+
+let cart = {};
+let selectedGuests = 2;
+let selectedTime = '';
+let currentCat = 'all';
+
+// ── TELEGRAM ──
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#0c0a08');
+  tg.setBackgroundColor('#0c0a08');
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  buildMenu();
+  buildTimeGrid();
+  buildGuestRow();
+  setMinDate();
+});
+
+function setMinDate() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('bDate').setAttribute('min', today);
+  document.getElementById('bDate').value = today;
+}
+
+// ── NAV ──
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === 'order') renderOrder();
+  });
+});
+
+// ── CATEGORIES ──
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    buildMenu();
+  });
+});
+
+// ── BUILD MENU ──
+function buildMenu() {
+  const list = document.getElementById('menuList');
+  const items = currentCat === 'all' ? MENU : MENU.filter(m => m.cat === currentCat);
+  list.innerHTML = items.map(item => {
+    const qty = cart[item.id] || 0;
+    return `
+    <div class="menu-card">
+      <img class="menu-img" src="${item.img}" alt="${item.name}" loading="lazy" />
+      <div class="menu-info">
+        <div>
+          <div class="menu-name">${item.name}</div>
+          <div class="menu-desc">${item.desc}</div>
+        </div>
+        <div class="menu-footer">
+          <div class="menu-price">${item.price} ₽</div>
+          ${qty === 0
+            ? `<button class="add-btn" onclick="addItem(${item.id})">+</button>`
+            : `<div class="qty-control">
+                <button class="qty-btn" onclick="removeItem(${item.id})">−</button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn" onclick="addItem(${item.id})">+</button>
+               </div>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addItem(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  updateCartBadge();
+  buildMenu();
+  const item = MENU.find(m => m.id === id);
+  showToast(`${item.name} добавлено`);
+}
+
+function removeItem(id) {
+  if (cart[id] > 0) cart[id]--;
+  if (cart[id] === 0) delete cart[id];
+  updateCartBadge();
+  buildMenu();
+}
+
+function updateCartBadge() {
+  const total = Object.values(cart).reduce((a,b) => a+b, 0);
+  const badge = document.getElementById('cartBadge');
+  if (total > 0) { badge.style.display=''; badge.textContent = total; }
+  else { badge.style.display='none'; }
+}
+
+// ── BUILD TIME GRID ──
+function buildTimeGrid() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = TIMES.map(t => {
+    const booked = BOOKED.includes(t);
+    const active = t === selectedTime ? 'active' : '';
+    const dis = booked ? 'disabled' : '';
+    return `<button class="time-btn ${active} ${dis}" data-time="${t}" onclick="selectTime('${t}')">${t}${booked ? '<br><small style="font-size:9px;opacity:.5">занято</small>' : ''}</button>`;
+  }).join('');
+}
+
+function selectTime(t) {
+  if (BOOKED.includes(t)) return;
+  selectedTime = t;
+  buildTimeGrid();
+}
+
+// ── BUILD GUEST ROW ──
+function buildGuestRow() {
+  const row = document.getElementById('guestRow');
+  row.innerHTML = [1,2,3,4,5,6].map(n =>
+    `<button class="guest-btn ${n===selectedGuests?'active':''}" onclick="selectGuests(${n})">${n}</button>`
+  ).join('');
+}
+
+function selectGuests(n) {
+  selectedGuests = n;
+  buildGuestRow();
+}
+
+// ── RENDER ORDER ──
+function renderOrder() {
+  const el = document.getElementById('orderContent');
+  const keys = Object.keys(cart).map(Number);
+  if (keys.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🍽</div>
+      <div class="empty-text">Ваша корзина пуста<br>Выберите блюда из меню</div>
+    </div>`;
+    return;
+  }
+  let subtotal = 0;
+  const items = keys.map(id => {
+    const item = MENU.find(m => m.id === id);
+    const total = item.price * cart[id];
+    subtotal += total;
+    return `<div class="order-item">
+      <img class="order-item-img" src="${item.img}" alt="${item.name}" />
+      <div class="order-item-info">
+        <div class="order-item-name">${item.name}</div>
+        <div class="order-item-qty">${cart[id]} × ${item.price} ₽</div>
+      </div>
+      <div class="order-item-price">${total} ₽</div>
+    </div>`;
+  }).join('');
+
+  const service = Math.round(subtotal * 0.1);
+  const total = subtotal + service;
+
+  el.innerHTML = `
+    <div class="order-list">${items}</div>
+    <div class="order-summary">
+      <div class="summary-row"><span>Сумма</span><span>${subtotal} ₽</span></div>
+      <div class="summary-row"><span>Сервисный сбор (10%)</span><span>${service} ₽</span></div>
+      <div class="summary-row total"><span>Итого</span><span>${total} ₽</span></div>
+    </div>
+    <div style="padding:16px 20px 0">
+      <button class="submit-btn" onclick="submitOrder()">Оформить заказ</button>
+    </div>`;
+}
+
+// ── SUBMIT BOOKING ──
+function submitBooking() {
+  const name = document.getElementById('bName').value.trim();
+  const phone = document.getElementById('bPhone').value.trim();
+  const date = document.getElementById('bDate').value;
+  const comment = document.getElementById('bComment').value.trim();
+
+  if (!name || !phone || !date || !selectedTime) {
+    showToast('Заполните все поля');
+    return;
+  }
+
+  const data = { type:'booking', name, phone, date, time:selectedTime, guests:selectedGuests, comment };
+  sendToBot(data);
+
+  showSuccess('Бронь подтверждена!',
+    `Столик на ${selectedGuests} гостей\n${date} в ${selectedTime}\n\nМы свяжемся с вами для подтверждения.`);
+}
+
+// ── SUBMIT ORDER ──
+function submitOrder() {
+  const keys = Object.keys(cart).map(Number);
+  if (keys.length === 0) return;
+
+  const items = keys.map(id => {
+    const item = MENU.find(m => m.id === id);
+    return `${item.name} × ${cart[id]}`;
+  });
+  const total = keys.reduce((sum, id) => sum + MENU.find(m => m.id===id).price * cart[id], 0);
+
+  const data = { type:'order', items, total };
+  sendToBot(data);
+
+  cart = {};
+  updateCartBadge();
+  showSuccess('Заказ принят!', `Ваш заказ передан кухне.\nОжидайте около 30–40 минут.\n\nСумма: ${total} ₽`);
+}
+
+// ── SEND TO BOT ──
+function sendToBot(data) {
+  if (tg) {
+    tg.sendData(JSON.stringify(data));
+  } else {
+    console.log('Bot data:', data);
+    // Fallback: send via fetch to your server
+    fetch('/api/webapp-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(() => {});
+  }
+}
+
+// ── SUCCESS ──
+function showSuccess(title, text) {
+  document.getElementById('successTitle').textContent = title;
+  document.getElementById('successText').textContent = text;
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+function closeSuccess() {
+  document.getElementById('successOverlay').classList.remove('show');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
