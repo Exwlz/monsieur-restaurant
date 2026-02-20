@@ -282,6 +282,7 @@
       transition: border-color .2s;
       width: 100%;
       -webkit-appearance: none;
+      appearance: none;
     }
     .form-input:focus, .form-select:focus { border-color: var(--gold); }
     .form-select option { background: #1e1a16; }
@@ -817,6 +818,8 @@ function submitBooking() {
 }
 
 // ── SUBMIT ORDER ──
+let pendingOrderData = null;
+
 function submitOrder() {
   const keys = Object.keys(cart).map(Number);
   if (keys.length === 0) return;
@@ -827,8 +830,7 @@ function submitOrder() {
   });
   const total = keys.reduce((sum, id) => sum + MENU.find(m => m.id===id).price * cart[id], 0);
 
-  const data = { type:'order', items, total };
-  sendToBot(data);
+  pendingOrderData = { type:'order', items, total };
 
   cart = {};
   updateCartBadge();
@@ -859,6 +861,10 @@ function showSuccess(title, text) {
 
 function closeSuccess() {
   document.getElementById('successOverlay').classList.remove('show');
+  if (pendingOrderData) {
+    sendToBot(pendingOrderData);
+    pendingOrderData = null;
+  }
 }
 
 // ── TOAST ──
