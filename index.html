@@ -1,593 +1,622 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Monsieur Restaurant</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Monsieur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=EB+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* ─── TOKENS ─── */
+:root{
+  --void:#060504;
+  --deep:#0d0b09;
+  --surface:#161310;
+  --card:#1c1814;
+  --card2:#221e19;
+  --gold:#c8a45a;
+  --gold2:#e2c07a;
+  --gold3:#f5dda0;
+  --ember:#d4621a;
+  --cream:#f2e8d8;
+  --fog:#8a7f72;
+  --rim:rgba(200,164,90,.15);
+  --rim2:rgba(200,164,90,.08);
+  --r:14px;
+}
 
-  <style>
-    :root {
-      --bg:        #0c0a08;
-      --bg2:       #141210;
-      --bg3:       #1e1a16;
-      --gold:      #c9a84c;
-      --gold-light:#e8c96a;
-      --cream:     #f0e6d3;
-      --muted:     #7a6e63;
-      --border:    rgba(201,168,76,0.18);
-      --red:       #c94c4c;
-    }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--void);color:var(--cream);font-family:'Jost',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
 
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+/* ─── GRAIN OVERLAY ─── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;opacity:.5;
+}
 
-    html, body {
-      background: var(--bg);
-      color: var(--cream);
-      font-family: 'Jost', sans-serif;
-      font-weight: 300;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* ─── HERO ─── */
+.hero{
+  position:relative;height:300px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding-bottom:36px;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85') center/cover no-repeat;
+  transform:scale(1.08);
+  animation:heroZoom 18s ease-in-out infinite alternate;
+}
+@keyframes heroZoom{to{transform:scale(1)}}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,5,4,.2) 0%,rgba(6,5,4,.7) 60%,rgba(6,5,4,1) 100%);
+}
 
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      height: 260px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 28px;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80') center/cover no-repeat;
-    }
-    .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(12,10,8,.35) 0%, rgba(12,10,8,.92) 80%);
-    }
-    .hero-content { position: relative; z-index: 1; text-align: center; }
-    .logo-line {
-      font-family: 'Playfair Display', serif;
-      font-size: 11px;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      line-height: 1;
-    }
-    .hero-sub {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 16px;
-      color: var(--gold-light);
-      margin-top: 5px;
-      letter-spacing: 1px;
-    }
+/* Floating orbs */
+.orb{
+  position:absolute;border-radius:50%;filter:blur(40px);pointer-events:none;
+  animation:drift linear infinite;
+}
+.orb1{width:180px;height:180px;background:radial-gradient(circle,rgba(200,164,90,.18),transparent 70%);top:-40px;left:-20px;animation-duration:12s;}
+.orb2{width:120px;height:120px;background:radial-gradient(circle,rgba(212,98,26,.12),transparent 70%);top:20px;right:10px;animation-duration:9s;animation-delay:-4s;}
+.orb3{width:90px;height:90px;background:radial-gradient(circle,rgba(200,164,90,.1),transparent 70%);bottom:60px;right:30px;animation-duration:14s;animation-delay:-7s;}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(15px,-20px) scale(1.1)}
+  66%{transform:translate(-10px,10px) scale(.9)}
+}
 
-    /* ── NAV TABS ── */
-    .nav {
-      display: flex;
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-    }
-    .nav-btn {
-      flex: 1;
-      padding: 14px 4px;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-family: 'Jost', sans-serif;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      position: relative;
-      transition: color .25s;
-    }
-    .nav-btn.active { color: var(--gold); }
-    .nav-btn::after {
-      content: '';
-      position: absolute; bottom: 0; left: 20%; right: 20%;
-      height: 1px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transition: transform .25s;
-    }
-    .nav-btn.active::after { transform: scaleX(1); }
+.hero-content{position:relative;z-index:1;text-align:center}
+.hero-eyebrow{
+  font-size:9px;letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;
+  animation:fadeUp .8s .2s both;
+}
+.hero-title{
+  font-family:'Bodoni Moda',serif;font-size:52px;font-weight:700;
+  letter-spacing:2px;line-height:.95;
+  background:linear-gradient(160deg,var(--cream) 40%,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:fadeUp .8s .35s both;
+}
+.hero-sub{
+  font-family:'EB Garamond',serif;font-style:italic;font-size:17px;
+  color:var(--gold);margin-top:8px;letter-spacing:1.5px;
+  animation:fadeUp .8s .5s both;
+}
+.hero-divider{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:12px;
+  animation:fadeUp .8s .65s both;
+}
+.hero-divider span{width:30px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),.6)}
+.hero-divider span:last-child{background:linear-gradient(90deg,rgba(200,164,90,.6),transparent)}
+.hero-divider i{font-size:10px;color:var(--gold);font-style:normal}
 
-    /* ── PAGES ── */
-    .page { display: none; padding: 0 0 100px; animation: fadeUp .35s ease; }
-    .page.active { display: block; }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(12px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
+/* ─── NAV ─── */
+.nav{
+  display:flex;background:var(--deep);
+  border-bottom:1px solid var(--rim);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.nav-btn{
+  flex:1;padding:15px 4px;background:none;border:none;
+  color:var(--fog);font-family:'Jost',sans-serif;
+  font-size:9.5px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;position:relative;transition:color .3s;
+}
+.nav-btn.active{color:var(--gold)}
+.nav-slider{
+  position:absolute;bottom:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transition:left .35s cubic-bezier(.65,0,.35,1),width .35s cubic-bezier(.65,0,.35,1);
+}
 
-    /* ── SECTION TITLE ── */
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      padding: 22px 20px 6px;
-      color: var(--cream);
-    }
-    .section-title span { color: var(--gold); }
-    .section-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0 20px 18px;
-    }
+/* ─── PAGES ─── */
+.page{display:none;padding-bottom:110px}
+.page.active{display:block}
 
-    /* ── MENU CATEGORIES ── */
-    .cat-scroll {
-      display: flex;
-      gap: 10px;
-      padding: 0 20px 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .cat-scroll::-webkit-scrollbar { display: none; }
-    .cat-btn {
-      flex-shrink: 0;
-      padding: 7px 16px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: none;
-      color: var(--muted);
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .cat-btn.active {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: var(--bg);
-      font-weight: 500;
-    }
+/* ─── SECTION HEADING ─── */
+.s-head{padding:26px 20px 4px}
+.s-title{
+  font-family:'Bodoni Moda',serif;font-size:26px;font-weight:400;
+  letter-spacing:.5px;line-height:1;
+}
+.s-title em{color:var(--gold);font-style:normal}
+.s-line{height:1px;background:linear-gradient(90deg,var(--gold) 0%,transparent 60%);margin:10px 20px 0;opacity:.3}
 
-    /* ── MENU ITEMS ── */
-    .menu-list { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
-    .menu-card {
-      display: flex;
-      gap: 14px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: border-color .2s;
-    }
-    .menu-card:active { border-color: var(--gold); }
-    .menu-img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-    .menu-info {
-      flex: 1;
-      padding: 14px 14px 14px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .menu-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 16px;
-      line-height: 1.25;
-      margin-bottom: 4px;
-    }
-    .menu-desc {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.35;
-      flex: 1;
-    }
-    .menu-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-    .menu-price {
-      font-size: 15px;
-      color: var(--gold);
-      font-weight: 500;
-    }
-    .add-btn {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      border: 1px solid var(--gold);
-      background: none;
-      color: var(--gold);
-      font-size: 20px;
-      line-height: 1;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-    }
-    .add-btn:active { background: var(--gold); color: var(--bg); }
-    .qty-control {
-      display: flex; align-items: center; gap: 8px;
-    }
-    .qty-num {
-      font-size: 15px;
-      font-weight: 500;
-      min-width: 18px;
-      text-align: center;
-    }
-    .qty-btn {
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: none;
-      color: var(--cream);
-      font-size: 16px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-    }
-    .qty-btn:active { border-color: var(--gold); color: var(--gold); }
+/* ─── CATEGORY SCROLL ─── */
+.cat-wrap{padding:18px 20px 16px;overflow-x:auto;scrollbar-width:none;display:flex;gap:8px}
+.cat-wrap::-webkit-scrollbar{display:none}
+.cat-pill{
+  flex-shrink:0;padding:8px 18px;border-radius:30px;border:1px solid var(--rim);
+  background:none;color:var(--fog);
+  font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;white-space:nowrap;
+}
+.cat-pill.active{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:transparent;color:var(--void);font-weight:500;
+}
 
-    /* ── CART BADGE ── */
-    .cart-badge {
-      display: inline-block;
-      background: var(--gold);
-      color: var(--bg);
-      border-radius: 10px;
-      padding: 1px 6px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-left: 4px;
-      vertical-align: middle;
-    }
+/* ─── MENU CARDS ─── */
+.menu-grid{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.mcard{
+  display:flex;gap:0;background:var(--card);
+  border:1px solid var(--rim2);border-radius:var(--r);
+  overflow:hidden;position:relative;
+  transition:border-color .3s,transform .2s;
+  opacity:0;transform:translateY(20px);
+}
+.mcard.visible{
+  animation:cardReveal .5s forwards;
+}
+@keyframes cardReveal{
+  to{opacity:1;transform:translateY(0)}
+}
+.mcard:active{transform:scale(.985)}
+.mcard::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(200,164,90,.04),transparent);
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:1;
+}
+.mcard:hover::before{opacity:1}
 
-    /* ── BOOKING ── */
-    .book-form { padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label {
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--gold);
-    }
-    .form-input, .form-select {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 16px;
-      color: var(--cream);
-      font-family: 'Jost', sans-serif;
-      font-size: 15px;
-      font-weight: 300;
-      outline: none;
-      transition: border-color .2s;
-      width: 100%;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .form-input:focus, .form-select:focus { border-color: var(--gold); }
-    .form-select option { background: #1e1a16; }
+.mcard-img-wrap{
+  position:relative;width:100px;flex-shrink:0;overflow:hidden;
+}
+.mcard-img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s cubic-bezier(.25,.1,.25,1);
+  min-height:105px;
+}
+.mcard:hover .mcard-img{transform:scale(1.08)}
+.mcard-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 60%,var(--card));
+}
 
-    .guest-row { display: flex; gap: 10px; }
-    .guest-btn {
-      flex: 1;
-      padding: 11px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: none;
-      color: var(--muted);
-      font-family: 'Jost', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .guest-btn.active {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: var(--bg);
-      font-weight: 500;
-    }
+.mcard-body{
+  flex:1;padding:14px 14px 14px 0;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.mcard-name{
+  font-family:'Bodoni Moda',serif;font-size:15.5px;line-height:1.2;
+  margin-bottom:4px;
+}
+.mcard-desc{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:13px;color:var(--fog);line-height:1.4;flex:1;
+}
+.mcard-foot{
+  display:flex;align-items:center;justify-content:space-between;margin-top:10px;
+}
+.mcard-price{
+  font-size:15px;font-weight:500;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
 
-    .time-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
-    .time-btn {
-      padding: 10px 4px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: none;
-      color: var(--muted);
-      font-family: 'Jost', sans-serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .time-btn.active {
-      background: var(--bg3);
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-    .time-btn.disabled {
-      opacity: .3;
-      pointer-events: none;
-    }
+/* Add button */
+.add-btn{
+  width:32px;height:32px;border-radius:50%;
+  border:1.5px solid var(--gold);background:none;
+  color:var(--gold);font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.add-btn::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:var(--gold);transform:scale(0);transition:transform .25s;
+}
+.add-btn:active::after{transform:scale(1)}
+.add-btn .plus{position:relative;z-index:1;transition:color .15s;pointer-events:none}
+.add-btn:active .plus{color:var(--void)}
 
-    .submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      border: none;
-      border-radius: 14px;
-      color: var(--bg);
-      font-family: 'Playfair Display', serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: opacity .2s, transform .1s;
-    }
-    .submit-btn:active { opacity: .85; transform: scale(.99); }
-    .submit-btn:disabled { opacity: .4; pointer-events: none; }
+/* Qty control */
+.qty-ctrl{display:flex;align-items:center;gap:6px}
+.qty-btn{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--rim);background:none;color:var(--cream);
+  font-size:16px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.qty-btn:active{border-color:var(--gold);color:var(--gold);transform:scale(.9)}
+.qty-num{
+  font-size:15px;font-weight:500;min-width:20px;text-align:center;
+  transition:transform .2s;
+}
+.qty-num.bump{animation:numBump .25s ease}
+@keyframes numBump{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 
-    /* ── ORDER PAGE ── */
-    .order-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
-    .order-item {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-    }
-    .order-item-img {
-      width: 50px; height: 50px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-    .order-item-info { flex: 1; }
-    .order-item-name { font-family: 'Playfair Display', serif; font-size: 15px; }
-    .order-item-qty { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .order-item-price { color: var(--gold); font-size: 14px; font-weight: 500; }
+/* Cart badge */
+.cart-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--void);border-radius:10px;
+  padding:1px 6px;font-size:10px;font-weight:600;
+  margin-left:4px;vertical-align:middle;
+  animation:badgePop .25s ease;
+}
+@keyframes badgePop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
 
-    .order-summary {
-      margin: 16px 20px 0;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-    }
-    .summary-row {
-      display: flex; justify-content: space-between;
-      font-size: 13px; color: var(--muted);
-      padding: 4px 0;
-    }
-    .summary-row.total {
-      font-size: 17px;
-      font-family: 'Playfair Display', serif;
-      color: var(--cream);
-      border-top: 1px solid var(--border);
-      margin-top: 8px;
-      padding-top: 12px;
-    }
-    .summary-row.total span:last-child { color: var(--gold); }
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-    .empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; }
+/* ─── BOOKING ─── */
+.book-form{padding:4px 20px;display:flex;flex-direction:column;gap:22px}
+.f-group{display:flex;flex-direction:column;gap:9px}
+.f-label{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);
+}
+.f-input,.f-select,.f-textarea{
+  background:var(--card);border:1px solid var(--rim);
+  border-radius:12px;padding:14px 16px;
+  color:var(--cream);font-family:'Jost',sans-serif;
+  font-size:15px;font-weight:300;outline:none;
+  transition:border-color .25s,box-shadow .25s;width:100%;
+  -webkit-appearance:none;appearance:none;
+}
+.f-input:focus,.f-select:focus,.f-textarea:focus{
+  border-color:rgba(200,164,90,.5);
+  box-shadow:0 0 0 3px rgba(200,164,90,.08);
+}
+.f-select option,.f-textarea option{background:var(--card)}
+.f-textarea{resize:none}
 
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: var(--bg3);
-      border: 1px solid var(--gold);
-      color: var(--cream);
-      padding: 11px 22px;
-      border-radius: 30px;
-      font-size: 13px;
-      letter-spacing: .5px;
-      opacity: 0;
-      transition: all .3s;
-      z-index: 1000;
-      white-space: nowrap;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* Time grid */
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.time-btn{
+  padding:10px 0;border:1px solid var(--rim);border-radius:12px;
+  background:none;color:var(--fog);
+  font-family:'Jost',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.time-btn.available{
+  animation:pulse-ring 2.5s ease-in-out infinite;
+}
+@keyframes pulse-ring{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,164,90,0)}
+  50%{box-shadow:0 0 0 3px rgba(200,164,90,.1)}
+}
+.time-btn.selected{
+  background:linear-gradient(135deg,rgba(200,164,90,.2),rgba(200,164,90,.08));
+  border-color:var(--gold);color:var(--gold);
+  animation:none;
+}
+.time-btn.booked{
+  opacity:.45;cursor:not-allowed;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(255,255,255,.015) 4px,rgba(255,255,255,.015) 8px);
+}
+.time-btn .t-label{display:block;font-size:13px}
+.time-btn .t-status{display:block;font-size:9px;margin-top:2px;letter-spacing:1px}
+.time-btn.booked .t-status{color:var(--ember)}
+.time-btn.selected .t-status{color:var(--gold)}
 
-    /* ── SUCCESS ── */
-    .success-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(12,10,8,.96);
-      z-index: 500;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 40px;
-    }
-    .success-overlay.show { display: flex; animation: fadeUp .4s ease; }
-    .success-icon { font-size: 64px; margin-bottom: 20px; }
-    .success-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      margin-bottom: 12px;
-      color: var(--gold);
-    }
-    .success-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 17px;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 32px;
-    }
+/* Guests */
+.guest-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.guest-btn{
+  padding:12px 0;border:1px solid var(--rim);border-radius:12px;
+  background:none;color:var(--fog);
+  font-family:'Jost',sans-serif;font-size:14px;
+  cursor:pointer;transition:all .2s;
+}
+.guest-btn.active{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:transparent;color:var(--void);font-weight:500;
+}
 
-    /* ── ABOUT ── */
-    .about-section { padding: 0 20px; }
-    .about-img {
-      width: 100%; height: 180px;
-      object-fit: cover;
-      border-radius: 14px;
-      margin-bottom: 18px;
-    }
-    .about-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #c8bfb3;
-      margin-bottom: 20px;
-    }
-    .info-cards { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-    .info-card {
-      display: flex; align-items: center; gap: 14px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-    .info-icon { font-size: 22px; width: 30px; text-align: center; }
-    .info-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
-    .info-val { font-size: 14px; margin-top: 2px; }
+/* Submit button */
+.cta-btn{
+  width:100%;padding:18px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold3));
+  background-size:200% 200%;
+  border:none;border-radius:14px;
+  color:var(--void);font-family:'Bodoni Moda',serif;
+  font-size:17px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .3s;
+  animation:gradientShift 4s ease infinite;
+}
+@keyframes gradientShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.cta-btn:active{transform:scale(.98)}
+.cta-btn:disabled{opacity:.35;pointer-events:none;animation:none}
+.cta-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.cta-btn:hover::after{opacity:1}
 
-    /* scrollable bottom padding */
-    .pb { height: 20px; }
-  </style>
+/* Ripple */
+.ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,.3);
+  transform:scale(0);animation:rippleAnim .5s linear;
+  pointer-events:none;
+}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0}}
+
+/* ─── ORDER PAGE ─── */
+.order-list{padding:0 16px;display:flex;flex-direction:column;gap:8px}
+.oitem{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--rim2);
+  border-radius:12px;padding:12px 14px;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}}
+.oitem-img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.oitem-info{flex:1}
+.oitem-name{font-family:'Bodoni Moda',serif;font-size:14.5px}
+.oitem-qty{font-size:11px;color:var(--fog);margin-top:2px}
+.oitem-price{
+  font-size:14px;font-weight:500;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.order-summary{
+  margin:14px 20px 0;background:var(--card);
+  border:1px solid var(--rim2);border-radius:14px;padding:18px;
+}
+.sum-row{
+  display:flex;justify-content:space-between;
+  font-size:13px;color:var(--fog);padding:4px 0;
+}
+.sum-row.total{
+  font-family:'Bodoni Moda',serif;font-size:18px;color:var(--cream);
+  border-top:1px solid var(--rim);margin-top:10px;padding-top:14px;
+}
+.sum-row.total span:last-child{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.empty-state{
+  text-align:center;padding:70px 20px;
+  animation:fadeUp .5s ease;
+}
+.empty-icon{font-size:52px;margin-bottom:14px;filter:grayscale(.5)}
+.empty-txt{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:19px;color:var(--fog);line-height:1.5;
+}
+
+/* ─── ABOUT ─── */
+.about-wrap{padding:4px 20px}
+.about-img-wrap{
+  position:relative;height:190px;border-radius:16px;
+  overflow:hidden;margin-bottom:20px;
+}
+.about-img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.about-img-wrap:hover .about-img{transform:scale(1.04)}
+.about-img-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 50%,rgba(6,5,4,.7));
+}
+.about-txt{
+  font-family:'EB Garamond',serif;font-size:17px;
+  line-height:1.75;color:#c5bbb0;margin-bottom:18px;
+}
+.info-list{display:flex;flex-direction:column;gap:8px}
+.info-item{
+  display:flex;align-items:center;gap:14px;
+  background:var(--card);border:1px solid var(--rim2);
+  border-radius:12px;padding:14px 16px;
+  transition:border-color .25s;
+}
+.info-item:hover{border-color:var(--rim)}
+.info-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.info-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
+.info-val{font-size:14px;margin-top:3px}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:88px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--card2);border:1px solid var(--rim);
+  color:var(--cream);padding:11px 22px;border-radius:30px;
+  font-size:13px;opacity:0;z-index:1000;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── SUCCESS OVERLAY ─── */
+.success-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(6,5,4,.97);
+  z-index:500;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px;
+}
+.success-overlay.show{
+  display:flex;
+  animation:overlayIn .4s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes overlayIn{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+.success-particles{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+.spark{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  animation:sparkFly 1.2s ease-out forwards;
+}
+@keyframes sparkFly{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:var(--tx,0) var(--ty,0) scale(0);opacity:0}
+}
+.success-ring{
+  width:90px;height:90px;border-radius:50%;
+  border:1.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+  animation:ringGrow .5s .1s cubic-bezier(.34,1.4,.64,1) both;
+  position:relative;
+}
+.success-ring::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(200,164,90,.2);
+  animation:ringPulse 2s ease infinite;
+}
+@keyframes ringGrow{from{transform:scale(0);opacity:0}}
+@keyframes ringPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.1);opacity:0}
+}
+.success-icon{font-size:38px;animation:iconPop .4s .3s both;line-height:1}
+@keyframes iconPop{from{transform:scale(0) rotate(-20deg);opacity:0}}
+.success-title{
+  font-family:'Bodoni Moda',serif;font-size:30px;font-weight:700;
+  background:linear-gradient(135deg,var(--gold),var(--gold3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;
+  animation:fadeUp .4s .4s both;
+}
+.success-text{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:16px;color:var(--fog);line-height:1.7;
+  margin-bottom:32px;white-space:pre-line;
+  animation:fadeUp .4s .5s both;
+}
+.success-cta{
+  animation:fadeUp .4s .6s both;width:100%;max-width:280px;
+}
+
+/* ─── HELPERS ─── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.pb{height:24px}
+</style>
 </head>
 <body>
 
 <!-- HERO -->
 <div class="hero">
   <div class="hero-bg"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
   <div class="hero-content">
-    <div class="logo-line">Fine Dining</div>
+    <div class="hero-eyebrow">Fine Dining · Москва</div>
     <h1 class="hero-title">Monsieur</h1>
     <p class="hero-sub">cuisine française</p>
+    <div class="hero-divider">
+      <span></span><i>✦</i><span></span>
+    </div>
   </div>
 </div>
 
 <!-- NAV -->
-<nav class="nav">
+<nav class="nav" id="nav">
   <button class="nav-btn active" data-page="menu">Меню</button>
   <button class="nav-btn" data-page="booking">Бронь</button>
   <button class="nav-btn" data-page="order">Заказ <span class="cart-badge" id="cartBadge" style="display:none">0</span></button>
   <button class="nav-btn" data-page="about">О нас</button>
+  <div class="nav-slider" id="navSlider"></div>
 </nav>
 
-<!-- ═══ PAGE: MENU ═══ -->
+<!-- ══════ MENU ══════ -->
 <div id="page-menu" class="page active">
-  <div class="section-title">Наше <span>Меню</span></div>
-  <div class="section-divider"></div>
-  <div class="cat-scroll">
-    <button class="cat-btn active" data-cat="all">Всё</button>
-    <button class="cat-btn" data-cat="starters">Закуски</button>
-    <button class="cat-btn" data-cat="mains">Основные</button>
-    <button class="cat-btn" data-cat="desserts">Десерты</button>
-    <button class="cat-btn" data-cat="drinks">Напитки</button>
+  <div class="s-head">
+    <div class="s-title">Наше <em>меню</em></div>
   </div>
-  <div class="menu-list" id="menuList"></div>
+  <div class="s-line"></div>
+  <div class="cat-wrap" id="catWrap"></div>
+  <div class="menu-grid" id="menuGrid"></div>
   <div class="pb"></div>
 </div>
 
-<!-- ═══ PAGE: BOOKING ═══ -->
+<!-- ══════ BOOKING ══════ -->
 <div id="page-booking" class="page">
-  <div class="section-title">Забронировать <span>столик</span></div>
-  <div class="section-divider"></div>
+  <div class="s-head">
+    <div class="s-title">Забронировать <em>столик</em></div>
+  </div>
+  <div class="s-line"></div>
+  <div style="height:20px"></div>
   <div class="book-form">
-    <div class="form-group">
-      <label class="form-label">Ваше имя</label>
-      <input id="bName" type="text" class="form-input" placeholder="Иван Иванов" />
+    <div class="f-group">
+      <label class="f-label">Ваше имя</label>
+      <input id="bName" type="text" class="f-input" placeholder="Иван Иванов"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Телефон</label>
-      <input id="bPhone" type="tel" class="form-input" placeholder="+7 900 000-00-00" />
+    <div class="f-group">
+      <label class="f-label">Телефон</label>
+      <input id="bPhone" type="tel" class="f-input" placeholder="+7 900 000-00-00"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Дата</label>
-      <input id="bDate" type="date" class="form-input" />
+    <div class="f-group">
+      <label class="f-label">Дата</label>
+      <input id="bDate" type="date" class="f-input" id="bDate"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Время</label>
+    <div class="f-group">
+      <label class="f-label">Время</label>
       <div class="time-grid" id="timeGrid"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Количество гостей</label>
-      <div class="guest-row" id="guestRow"></div>
+    <div class="f-group">
+      <label class="f-label">Количество гостей</label>
+      <div class="guest-grid" id="guestGrid"></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Пожелания к столику</label>
-      <textarea id="bComment" class="form-input" rows="3" placeholder="Например: тихий угол, окно, высокий стул для ребёнка…" style="resize:none;"></textarea>
+    <div class="f-group">
+      <label class="f-label">Пожелания</label>
+      <textarea id="bComment" class="f-textarea" rows="3"
+        placeholder="Тихий угол, вид на зал, детское кресло…"></textarea>
     </div>
-    <button class="submit-btn" id="bookBtn" onclick="submitBooking()">Забронировать</button>
+    <button class="cta-btn" id="bookBtn" onclick="submitBooking()">
+      Забронировать
+    </button>
   </div>
   <div class="pb"></div>
 </div>
 
-<!-- ═══ PAGE: ORDER ═══ -->
+<!-- ══════ ORDER ══════ -->
 <div id="page-order" class="page">
-  <div class="section-title">Ваш <span>Заказ</span></div>
-  <div class="section-divider"></div>
+  <div class="s-head">
+    <div class="s-title">Ваш <em>заказ</em></div>
+  </div>
+  <div class="s-line"></div>
+  <div style="height:16px"></div>
   <div id="orderContent"></div>
   <div class="pb"></div>
 </div>
 
-<!-- ═══ PAGE: ABOUT ═══ -->
+<!-- ══════ ABOUT ══════ -->
 <div id="page-about" class="page">
-  <div class="section-title">О <span>ресторане</span></div>
-  <div class="section-divider"></div>
-  <div class="about-section">
-    <img class="about-img" src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Зал ресторана" />
-    <p class="about-text">
-      Monsieur — это не просто ресторан. Это пространство, где каждое блюдо рассказывает историю. Мы вдохновлены традицией французской кухни и стремимся к тому, чтобы каждый гость чувствовал себя особенным гостем Парижа.
-    </p>
-    <p class="about-text">
-      Шеф-повар Пьер Лефевр собрал команду из лучших кулинаров Европы. Наши продукты поставляются напрямую с ферм Прованса и Бургундии.
-    </p>
-    <div class="info-cards">
-      <div class="info-card">
+  <div class="s-head">
+    <div class="s-title">О <em>ресторане</em></div>
+  </div>
+  <div class="s-line"></div>
+  <div style="height:20px"></div>
+  <div class="about-wrap">
+    <div class="about-img-wrap">
+      <img class="about-img" src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Зал"/>
+    </div>
+    <p class="about-txt">Monsieur — это пространство, где каждое блюдо рассказывает историю. Вдохновлённые традицией французской кухни, мы создаём вечера, которые запоминаются.</p>
+    <p class="about-txt">Шеф Пьер Лефевр собрал команду из лучших кулинаров Европы. Продукты поставляются напрямую с ферм Прованса и Бургундии.</p>
+    <div class="info-list">
+      <div class="info-item">
         <div class="info-icon">📍</div>
-        <div>
-          <div class="info-label">Адрес</div>
-          <div class="info-val">Москва, ул. Кузнецкий Мост, 7</div>
-        </div>
+        <div><div class="info-lbl">Адрес</div><div class="info-val">Москва, ул. Кузнецкий Мост, 7</div></div>
       </div>
-      <div class="info-card">
+      <div class="info-item">
         <div class="info-icon">🕐</div>
-        <div>
-          <div class="info-label">Часы работы</div>
-          <div class="info-val">Пн–Пт: 12:00 – 23:00 &nbsp;|&nbsp; Сб–Вс: 11:00 – 00:00</div>
-        </div>
+        <div><div class="info-lbl">Часы работы</div><div class="info-val">Пн–Пт 12:00–23:00 · Сб–Вс 11:00–00:00</div></div>
       </div>
-      <div class="info-card">
+      <div class="info-item">
         <div class="info-icon">📞</div>
-        <div>
-          <div class="info-label">Телефон</div>
-          <div class="info-val">+7 (495) 123-45-67</div>
-        </div>
+        <div><div class="info-lbl">Телефон</div><div class="info-val">+7 (495) 123-45-67</div></div>
       </div>
-      <div class="info-card">
+      <div class="info-item">
         <div class="info-icon">⭐</div>
-        <div>
-          <div class="info-label">Рейтинг</div>
-          <div class="info-val">4.9 / 5 · Michelin Recommended 2024</div>
-        </div>
+        <div><div class="info-lbl">Рейтинг</div><div class="info-val">4.9 · Michelin Recommended 2024</div></div>
       </div>
     </div>
   </div>
@@ -597,105 +626,137 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- SUCCESS OVERLAY -->
+<!-- SUCCESS -->
 <div class="success-overlay" id="successOverlay">
-  <div class="success-icon">✨</div>
-  <div class="success-title" id="successTitle">Готово!</div>
+  <div class="success-particles" id="sparks"></div>
+  <div class="success-ring"><div class="success-icon" id="successIcon">✓</div></div>
+  <div class="success-title" id="successTitle"></div>
   <div class="success-text" id="successText"></div>
-  <button class="submit-btn" style="max-width:260px" onclick="closeSuccess()">Отлично!</button>
+  <div class="success-cta">
+    <button class="cta-btn" onclick="closeSuccess()">Отлично!</button>
+  </div>
 </div>
 
 <script>
-// ── DATA ──
+/* ════════════════════════════════
+   DATA
+════════════════════════════════ */
 const MENU = [
-  { id:1, cat:'starters', name:'Тартар из тунца', desc:'Свежий тунец, авокадо, икра тобико, лимонная заправка', price:890, img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&q=80' },
-  { id:2, cat:'starters', name:'Луковый суп', desc:'Карамелизированный лук, грюйер, хрустящий крутон', price:590, img:'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80' },
-  { id:3, cat:'starters', name:'Фуа-гра', desc:'Утиная печень, карамелизированная груша, бриошь', price:1490, img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80' },
-  { id:4, cat:'mains',    name:'Утиная грудка', desc:'Magret de canard, соус из красного вина, тимьян', price:1890, img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80' },
-  { id:5, cat:'mains',    name:'Рыба с овощами', desc:'Дорадо на гриле, прованские овощи, базиликовое масло', price:1650, img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80' },
-  { id:6, cat:'mains',    name:'Говяжье филе', desc:'Стейк мирового уровня, картофельное пюре, трюфельный соус', price:2890, img:'https://images.unsplash.com/photo-1558030006-450675393462?w=400&q=80' },
-  { id:7, cat:'mains',    name:'Риссото с грибами', desc:'Портобелло, пармезан, белые грибы, трюфельное масло', price:1290, img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80' },
-  { id:8, cat:'desserts', name:'Крем-брюле', desc:'Классический, с ванилью Бурбон', price:490, img:'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400&q=80' },
-  { id:9, cat:'desserts', name:'Тарт Татен', desc:'Яблочный перевёрнутый тарт, крем-фреш', price:550, img:'https://images.unsplash.com/photo-1559622214-f8a9850965bb?w=400&q=80' },
-  { id:10,cat:'desserts', name:'Шоколадный фондан', desc:'Горький шоколад 72%, ванильное мороженое', price:620, img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80' },
-  { id:11,cat:'drinks',   name:'Бокал Бургундии', desc:'Pinot Noir, домен Жан Гиво, 2020', price:890, img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80' },
-  { id:12,cat:'drinks',   name:'Лимонад Monsieur', desc:'Лайм, базилик, мята, газированная вода', price:390, img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80' },
-  { id:13,cat:'drinks',   name:'Кофе по-французски', desc:'Double espresso, горький шоколад, пена', price:350, img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80' },
+  {id:1,cat:'starters',name:'Тартар из тунца',desc:'Свежий тунец, авокадо, икра тобико, лимон',price:890,img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&q=80'},
+  {id:2,cat:'starters',name:'Луковый суп',desc:'Карамелизированный лук, грюйер, крутон',price:590,img:'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80'},
+  {id:3,cat:'starters',name:'Фуа-гра',desc:'Утиная печень, карамелизированная груша, бриошь',price:1490,img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80'},
+  {id:4,cat:'mains',name:'Утиная грудка',desc:'Magret de canard, соус из красного вина, тимьян',price:1890,img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80'},
+  {id:5,cat:'mains',name:'Дорадо на гриле',desc:'Прованские овощи, базиликовое масло',price:1650,img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80'},
+  {id:6,cat:'mains',name:'Говяжье филе',desc:'Стейк, картофельное пюре, трюфельный соус',price:2890,img:'https://images.unsplash.com/photo-1558030006-450675393462?w=400&q=80'},
+  {id:7,cat:'mains',name:'Ризотто с грибами',desc:'Портобелло, пармезан, трюфельное масло',price:1290,img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80'},
+  {id:8,cat:'desserts',name:'Крем-брюле',desc:'Классический, с ванилью Бурбон',price:490,img:'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400&q=80'},
+  {id:9,cat:'desserts',name:'Тарт Татен',desc:'Яблочный перевёрнутый тарт, крем-фреш',price:550,img:'https://images.unsplash.com/photo-1559622214-f8a9850965bb?w=400&q=80'},
+  {id:10,cat:'desserts',name:'Шоколадный фондан',desc:'72% горький шоколад, ванильное мороженое',price:620,img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80'},
+  {id:11,cat:'drinks',name:'Бокал Бургундии',desc:'Pinot Noir, домен Жан Гиво, 2020',price:890,img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80'},
+  {id:12,cat:'drinks',name:'Лимонад Monsieur',desc:'Лайм, базилик, мята, газированная вода',price:390,img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80'},
+  {id:13,cat:'drinks',name:'Кофе по-французски',desc:'Double espresso, горький шоколад, пена',price:350,img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80'},
 ];
+const CATS = [{id:'all',label:'Всё'},{id:'starters',label:'Закуски'},{id:'mains',label:'Основные'},{id:'desserts',label:'Десерты'},{id:'drinks',label:'Напитки'}];
+const ALL_TIMES = ['12:00','13:00','14:00','15:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 
-const TIMES = ['12:00','13:00','14:00','15:00','17:00','18:00','19:00','20:00','21:00','22:00'];
-const BOOKED = ['15:00','20:00'];
-
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
 let cart = {};
+let activeCat = 'all';
 let selectedGuests = 2;
 let selectedTime = '';
-let currentCat = 'all';
+let pendingData = null;
 
-// ── TELEGRAM ──
+/* ════════════════════════════════
+   BOOKING PERSISTENCE (localStorage)
+   Key format: bookings_YYYY-MM-DD → ["12:00","19:00"]
+════════════════════════════════ */
+function getBookedTimes(date) {
+  if (!date) return [];
+  try {
+    return JSON.parse(localStorage.getItem('bookings_' + date) || '[]');
+  } catch { return []; }
+}
+function addBookedTime(date, time) {
+  const arr = getBookedTimes(date);
+  if (!arr.includes(time)) arr.push(time);
+  localStorage.setItem('bookings_' + date, JSON.stringify(arr));
+}
+
+/* ════════════════════════════════
+   TELEGRAM
+════════════════════════════════ */
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor('#0c0a08');
-  tg.setBackgroundColor('#0c0a08');
+if (tg) { tg.ready(); tg.expand(); }
+
+/* ════════════════════════════════
+   NAV SLIDER
+════════════════════════════════ */
+const navEl = document.getElementById('nav');
+const slider = document.getElementById('navSlider');
+function moveSlider(btn) {
+  const r = btn.getBoundingClientRect();
+  const nr = navEl.getBoundingClientRect();
+  slider.style.left = (r.left - nr.left) + 'px';
+  slider.style.width = r.width + 'px';
 }
-
-// ── INIT ──
-window.addEventListener('DOMContentLoaded', () => {
-  buildMenu();
-  buildTimeGrid();
-  buildGuestRow();
-  setMinDate();
-});
-
-function setMinDate() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('bDate').setAttribute('min', today);
-  document.getElementById('bDate').value = today;
-}
-
-// ── NAV ──
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    moveSlider(btn);
     if (btn.dataset.page === 'order') renderOrder();
+    if (btn.dataset.page === 'booking') renderTimeGrid();
+    window.scrollTo({top:0,behavior:'smooth'});
   });
 });
+// init slider position
+setTimeout(() => moveSlider(document.querySelector('.nav-btn.active')), 0);
 
-// ── CATEGORIES ──
-document.querySelectorAll('.cat-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentCat = btn.dataset.cat;
+/* ════════════════════════════════
+   CATEGORIES
+════════════════════════════════ */
+function buildCats() {
+  const wrap = document.getElementById('catWrap');
+  wrap.innerHTML = CATS.map(c =>
+    `<button class="cat-pill ${c.id===activeCat?'active':''}" data-cat="${c.id}">${c.label}</button>`
+  ).join('');
+  wrap.querySelectorAll('.cat-pill').forEach(b => b.addEventListener('click', () => {
+    activeCat = b.dataset.cat;
+    buildCats();
     buildMenu();
-  });
-});
+  }));
+}
 
-// ── BUILD MENU ──
+/* ════════════════════════════════
+   MENU
+════════════════════════════════ */
 function buildMenu() {
-  const list = document.getElementById('menuList');
-  const items = currentCat === 'all' ? MENU : MENU.filter(m => m.cat === currentCat);
-  list.innerHTML = items.map(item => {
+  const grid = document.getElementById('menuGrid');
+  const items = activeCat === 'all' ? MENU : MENU.filter(m => m.cat === activeCat);
+  grid.innerHTML = items.map((item, i) => {
     const qty = cart[item.id] || 0;
     return `
-    <div class="menu-card">
-      <img class="menu-img" src="${item.img}" alt="${item.name}" loading="lazy" />
-      <div class="menu-info">
+    <div class="mcard" style="animation-delay:${i * 55}ms">
+      <div class="mcard-img-wrap">
+        <img class="mcard-img" src="${item.img}" alt="${item.name}" loading="lazy"/>
+        <div class="mcard-img-overlay"></div>
+      </div>
+      <div class="mcard-body">
         <div>
-          <div class="menu-name">${item.name}</div>
-          <div class="menu-desc">${item.desc}</div>
+          <div class="mcard-name">${item.name}</div>
+          <div class="mcard-desc">${item.desc}</div>
         </div>
-        <div class="menu-footer">
-          <div class="menu-price">${item.price} ₽</div>
+        <div class="mcard-foot">
+          <div class="mcard-price">${item.price.toLocaleString()} ₽</div>
           ${qty === 0
-            ? `<button class="add-btn" onclick="addItem(${item.id})">+</button>`
-            : `<div class="qty-control">
+            ? `<button class="add-btn" onclick="addItem(${item.id},this)"><span class="plus">+</span></button>`
+            : `<div class="qty-ctrl">
                 <button class="qty-btn" onclick="removeItem(${item.id})">−</button>
-                <span class="qty-num">${qty}</span>
+                <span class="qty-num" id="qty_${item.id}">${qty}</span>
                 <button class="qty-btn" onclick="addItem(${item.id})">+</button>
                </div>`
           }
@@ -703,177 +764,286 @@ function buildMenu() {
       </div>
     </div>`;
   }).join('');
+
+  // Intersection observer for card reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, {threshold: 0.05});
+  grid.querySelectorAll('.mcard').forEach(c => observer.observe(c));
 }
 
-function addItem(id) {
+function addItem(id, btn) {
   cart[id] = (cart[id] || 0) + 1;
-  updateCartBadge();
+  updateBadge();
   buildMenu();
   const item = MENU.find(m => m.id === id);
-  showToast(`${item.name} добавлено`);
+  showToast('✦  ' + item.name);
+  // Ripple on btn
+  if (btn) addRipple(btn);
 }
-
 function removeItem(id) {
-  if (cart[id] > 0) cart[id]--;
-  if (cart[id] === 0) delete cart[id];
-  updateCartBadge();
+  if (!cart[id]) return;
+  cart[id]--;
+  if (!cart[id]) delete cart[id];
+  updateBadge();
   buildMenu();
 }
-
-function updateCartBadge() {
+function updateBadge() {
   const total = Object.values(cart).reduce((a,b) => a+b, 0);
   const badge = document.getElementById('cartBadge');
-  if (total > 0) { badge.style.display=''; badge.textContent = total; }
-  else { badge.style.display='none'; }
+  if (total > 0) { badge.style.display = ''; badge.textContent = total; }
+  else badge.style.display = 'none';
 }
 
-// ── BUILD TIME GRID ──
-function buildTimeGrid() {
+/* ════════════════════════════════
+   TIME GRID
+════════════════════════════════ */
+function renderTimeGrid() {
+  const date = document.getElementById('bDate').value;
+  const booked = getBookedTimes(date);
   const grid = document.getElementById('timeGrid');
-  grid.innerHTML = TIMES.map(t => {
-    const booked = BOOKED.includes(t);
-    const active = t === selectedTime ? 'active' : '';
-    const dis = booked ? 'disabled' : '';
-    return `<button class="time-btn ${active} ${dis}" data-time="${t}" onclick="selectTime('${t}')">${t}${booked ? '<br><small style="font-size:9px;opacity:.5">занято</small>' : ''}</button>`;
+  grid.innerHTML = ALL_TIMES.map(t => {
+    const isBooked = booked.includes(t);
+    const isSelected = t === selectedTime;
+    let cls = isBooked ? 'booked' : (isSelected ? 'selected' : 'available');
+    let statusTxt = isBooked ? 'занято' : (isSelected ? 'выбрано' : 'свободно');
+    return `<button class="time-btn ${cls}" onclick="selectTime('${t}')" ${isBooked ? 'disabled' : ''}>
+      <span class="t-label">${t}</span>
+      <span class="t-status">${statusTxt}</span>
+    </button>`;
   }).join('');
 }
 
 function selectTime(t) {
-  if (BOOKED.includes(t)) return;
+  const date = document.getElementById('bDate').value;
+  const booked = getBookedTimes(date);
+  if (booked.includes(t)) return;
   selectedTime = t;
-  buildTimeGrid();
+  renderTimeGrid();
 }
 
-// ── BUILD GUEST ROW ──
-function buildGuestRow() {
-  const row = document.getElementById('guestRow');
-  row.innerHTML = [1,2,3,4,5,6].map(n =>
-    `<button class="guest-btn ${n===selectedGuests?'active':''}" onclick="selectGuests(${n})">${n}</button>`
+/* ════════════════════════════════
+   GUESTS
+════════════════════════════════ */
+function buildGuests() {
+  const grid = document.getElementById('guestGrid');
+  grid.innerHTML = [1,2,3,4,5,6].map(n =>
+    `<button class="guest-btn ${n===selectedGuests?'active':''}" onclick="selectGuest(${n})">${n}</button>`
   ).join('');
 }
+function selectGuest(n) { selectedGuests = n; buildGuests(); }
 
-function selectGuests(n) {
-  selectedGuests = n;
-  buildGuestRow();
-}
-
-// ── RENDER ORDER ──
-function renderOrder() {
-  const el = document.getElementById('orderContent');
-  const keys = Object.keys(cart).map(Number);
-  if (keys.length === 0) {
-    el.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">🍽</div>
-      <div class="empty-text">Ваша корзина пуста<br>Выберите блюда из меню</div>
-    </div>`;
-    return;
-  }
-  let subtotal = 0;
-  const items = keys.map(id => {
-    const item = MENU.find(m => m.id === id);
-    const total = item.price * cart[id];
-    subtotal += total;
-    return `<div class="order-item">
-      <img class="order-item-img" src="${item.img}" alt="${item.name}" />
-      <div class="order-item-info">
-        <div class="order-item-name">${item.name}</div>
-        <div class="order-item-qty">${cart[id]} × ${item.price} ₽</div>
-      </div>
-      <div class="order-item-price">${total} ₽</div>
-    </div>`;
-  }).join('');
-
-  const service = Math.round(subtotal * 0.1);
-  const total = subtotal + service;
-
-  el.innerHTML = `
-    <div class="order-list">${items}</div>
-    <div class="order-summary">
-      <div class="summary-row"><span>Сумма</span><span>${subtotal} ₽</span></div>
-      <div class="summary-row"><span>Сервисный сбор (10%)</span><span>${service} ₽</span></div>
-      <div class="summary-row total"><span>Итого</span><span>${total} ₽</span></div>
-    </div>
-    <div style="padding:16px 20px 0">
-      <button class="submit-btn" onclick="submitOrder()">Оформить заказ</button>
-    </div>`;
-}
-
-// ── SUBMIT BOOKING ──
+/* ════════════════════════════════
+   SUBMIT BOOKING
+════════════════════════════════ */
 function submitBooking() {
-  const name = document.getElementById('bName').value.trim();
+  const name  = document.getElementById('bName').value.trim();
   const phone = document.getElementById('bPhone').value.trim();
-  const date = document.getElementById('bDate').value;
+  const date  = document.getElementById('bDate').value;
   const comment = document.getElementById('bComment').value.trim();
 
   if (!name || !phone || !date || !selectedTime) {
-    showToast('Заполните все поля');
-    return;
+    showToast('⚠  Заполните все поля'); return;
   }
 
-  const data = { type:'booking', name, phone, date, time:selectedTime, guests:selectedGuests, comment };
-  sendToBot(data);
+  // Save to localStorage immediately
+  addBookedTime(date, selectedTime);
+  renderTimeGrid(); // update UI to show slot as "занято"
 
-  showSuccess('Бронь подтверждена!',
-    `Столик на ${selectedGuests} гостей\n${date} в ${selectedTime}\n\nМы свяжемся с вами для подтверждения.`);
+  const data = {type:'booking', name, phone, date, time:selectedTime, guests:selectedGuests, comment};
+  pendingData = data;
+
+  showSuccess('✦', 'Бронь подтверждена!',
+    `Столик на ${selectedGuests} ${guestWord(selectedGuests)}\n${formatDate(date)} · ${selectedTime}\n\nМы свяжемся для подтверждения`);
+  selectedTime = '';
 }
 
-// ── SUBMIT ORDER ──
-let pendingOrderData = null;
+/* ════════════════════════════════
+   RENDER ORDER
+════════════════════════════════ */
+function renderOrder() {
+  const el = document.getElementById('orderContent');
+  const keys = Object.keys(cart).map(Number);
+  if (!keys.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🍽</div>
+      <div class="empty-txt">Корзина пуста<br>Выберите блюда из меню</div>
+    </div>`; return;
+  }
+  let sub = 0;
+  const rows = keys.map(id => {
+    const m = MENU.find(x => x.id === id);
+    const tot = m.price * cart[id]; sub += tot;
+    return `<div class="oitem">
+      <img class="oitem-img" src="${m.img}" alt="${m.name}"/>
+      <div class="oitem-info">
+        <div class="oitem-name">${m.name}</div>
+        <div class="oitem-qty">${cart[id]} × ${m.price.toLocaleString()} ₽</div>
+      </div>
+      <div class="oitem-price">${tot.toLocaleString()} ₽</div>
+    </div>`;
+  }).join('');
+  const svc = Math.round(sub * .1);
+  const total = sub + svc;
+  el.innerHTML = `
+    <div class="order-list">${rows}</div>
+    <div class="order-summary">
+      <div class="sum-row"><span>Сумма</span><span>${sub.toLocaleString()} ₽</span></div>
+      <div class="sum-row"><span>Сервисный сбор (10%)</span><span>${svc.toLocaleString()} ₽</span></div>
+      <div class="sum-row total"><span>Итого</span><span>${total.toLocaleString()} ₽</span></div>
+    </div>
+    <div style="padding:16px 20px 0">
+      <button class="cta-btn" onclick="submitOrder()">Оформить заказ</button>
+    </div>`;
+}
 
+/* ════════════════════════════════
+   SUBMIT ORDER
+════════════════════════════════ */
 function submitOrder() {
   const keys = Object.keys(cart).map(Number);
-  if (keys.length === 0) return;
-
+  if (!keys.length) return;
   const items = keys.map(id => {
-    const item = MENU.find(m => m.id === id);
-    return `${item.name} × ${cart[id]}`;
+    const m = MENU.find(x => x.id === id);
+    return `${m.name} × ${cart[id]}`;
   });
-  const total = keys.reduce((sum, id) => sum + MENU.find(m => m.id===id).price * cart[id], 0);
-
-  pendingOrderData = { type:'order', items, total };
-
-  cart = {};
-  updateCartBadge();
-  showSuccess('Заказ принят!', `Ваш заказ передан кухне.\nОжидайте около 30–40 минут.\n\nСумма: ${total} ₽`);
+  const total = keys.reduce((s,id) => s + MENU.find(x => x.id===id).price * cart[id], 0);
+  pendingData = {type:'order', items, total};
+  cart = {}; updateBadge();
+  showSuccess('🍽', 'Заказ принят!',
+    `Ваш заказ передан на кухню\nОжидайте 30–40 минут\n\nСумма: ${total.toLocaleString()} ₽`);
 }
 
-// ── SEND TO BOT ──
+/* ════════════════════════════════
+   SEND TO BOT
+════════════════════════════════ */
 function sendToBot(data) {
-  if (tg) {
-    tg.sendData(JSON.stringify(data));
-  } else {
-    console.log('Bot data:', data);
-    // Fallback: send via fetch to your server
-    fetch('/api/webapp-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).catch(() => {});
+  if (tg?.sendData) { tg.sendData(JSON.stringify(data)); }
+  else {
+    fetch('/api/webapp-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
   }
 }
 
-// ── SUCCESS ──
-function showSuccess(title, text) {
+/* ════════════════════════════════
+   SUCCESS OVERLAY
+════════════════════════════════ */
+function showSuccess(icon, title, text) {
+  document.getElementById('successIcon').textContent = icon;
   document.getElementById('successTitle').textContent = title;
   document.getElementById('successText').textContent = text;
   document.getElementById('successOverlay').classList.add('show');
+  spawnSparks();
 }
-
 function closeSuccess() {
   document.getElementById('successOverlay').classList.remove('show');
-  if (pendingOrderData) {
-    sendToBot(pendingOrderData);
-    pendingOrderData = null;
+  if (pendingData) { sendToBot(pendingData); pendingData = null; }
+}
+
+/* Particle sparks */
+function spawnSparks() {
+  const container = document.getElementById('sparks');
+  container.innerHTML = '';
+  const colors = ['#c8a45a','#e2c07a','#f5dda0','#d4621a','#fff'];
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  for (let i = 0; i < 28; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const angle = (i / 28) * Math.PI * 2;
+    const dist = 80 + Math.random() * 140;
+    const tx = Math.cos(angle) * dist + 'px';
+    const ty = Math.sin(angle) * dist + 'px';
+    Object.assign(s.style, {
+      left: cx + 'px', top: cy + 'px',
+      background: colors[i % colors.length],
+      width: (2 + Math.random() * 4) + 'px',
+      height: (2 + Math.random() * 4) + 'px',
+      '--tx': `translateX(${tx})`,
+      '--ty': `translateY(${ty})`,
+      animationDelay: (Math.random() * .3) + 's',
+      animationDuration: (.8 + Math.random() * .6) + 's',
+    });
+    container.appendChild(s);
   }
 }
 
-// ── TOAST ──
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
+
+/* ════════════════════════════════
+   RIPPLE
+════════════════════════════════ */
+function addRipple(btn) {
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const size = Math.max(btn.offsetWidth, btn.offsetHeight);
+  Object.assign(r.style, {width: size+'px', height: size+'px',
+    left: 0, top: 0, marginLeft: -(size/2)+'px', marginTop: -(size/2)+'px'});
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+}
+
+/* Ripple on all .cta-btn */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.cta-btn');
+  if (!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const size = Math.max(btn.offsetWidth, btn.offsetHeight) * 2;
+  Object.assign(r.style, {
+    width: size+'px', height: size+'px',
+    left: (e.clientX - rect.left - size/2)+'px',
+    top:  (e.clientY - rect.top  - size/2)+'px',
+  });
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+});
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+function guestWord(n) {
+  if (n === 1) return 'гостя';
+  if (n >= 2 && n <= 4) return 'гостей';
+  return 'гостей';
+}
+function formatDate(d) {
+  if (!d) return '';
+  const [y,m,dd] = d.split('-');
+  const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  return `${+dd} ${months[+m-1]} ${y}`;
+}
+
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  // Min date = today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('bDate').min = today;
+  document.getElementById('bDate').value = today;
+  document.getElementById('bDate').addEventListener('change', () => {
+    selectedTime = '';
+    renderTimeGrid();
+  });
+
+  buildCats();
+  buildMenu();
+  renderTimeGrid();
+  buildGuests();
+});
 </script>
 </body>
 </html>
