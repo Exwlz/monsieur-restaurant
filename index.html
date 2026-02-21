@@ -10,58 +10,79 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
-  --void:#060504;--deep:#0d0b09;--card:#1c1814;--card2:#221e19;
+  --void:#060504;--deep:#0d0b09;--surface:#161310;
+  --card:#1c1814;--card2:#221e19;
   --gold:#c8a45a;--gold2:#e2c07a;--gold3:#f5dda0;
   --ember:#d4621a;--cream:#f2e8d8;--fog:#8a7f72;
   --rim:rgba(200,164,90,.18);--rim2:rgba(200,164,90,.07);
-  --green:#4caf82;--r:14px;
+  --r:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--void);color:var(--cream);font-family:'Jost',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.55;animation:grain .5s steps(2) infinite;}
-@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-1px,1px)}75%{transform:translate(1px,-1px)}}
 
-/* HERO */
-.hero{position:relative;height:290px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:34px}
-.hero-bg{position:absolute;inset:-5%;background:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85') center/cover no-repeat;animation:breath 20s ease-in-out infinite alternate;}
-@keyframes breath{0%{transform:scale(1.12)}100%{transform:scale(1) translateY(-2%)}}
-.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,5,4,.15) 0%,rgba(6,5,4,.6) 55%,rgba(6,5,4,1) 100%);}
+/* GRAIN */
+body::before{content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;opacity:.6;animation:grainShift 0.5s steps(2) infinite;}
+@keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-1px,1px)}50%{transform:translate(1px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(1px,1px)}}
+
+/* ══ HERO ══ */
+.hero{position:relative;height:310px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:38px}
+.hero-bg{position:absolute;inset:-5%;
+  background:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=85') center/cover no-repeat;
+  animation:heroBreath 20s ease-in-out infinite alternate;will-change:transform;}
+@keyframes heroBreath{0%{transform:scale(1.12) translateY(0)}100%{transform:scale(1) translateY(-2%)}}
+.hero-bg::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,5,4,.15) 0%,rgba(6,5,4,.55) 50%,rgba(6,5,4,1) 100%);}
+
+/* Animated orbs */
 .orb{position:absolute;border-radius:50%;filter:blur(50px);pointer-events:none;}
-.orb1{width:200px;height:200px;background:radial-gradient(circle,rgba(200,164,90,.2),transparent 70%);top:-50px;left:-30px;animation:o1 15s ease-in-out infinite alternate;}
-.orb2{width:130px;height:130px;background:radial-gradient(circle,rgba(212,98,26,.14),transparent 70%);top:5px;right:-5px;animation:o2 11s ease-in-out infinite alternate;}
-@keyframes o1{to{transform:translate(25px,18px) scale(1.1)}}
-@keyframes o2{to{transform:translate(-18px,22px)}}
+.orb1{width:200px;height:200px;background:radial-gradient(circle,rgba(200,164,90,.22),transparent 70%);top:-60px;left:-40px;animation:orb1Drift 15s ease-in-out infinite alternate;}
+.orb2{width:130px;height:130px;background:radial-gradient(circle,rgba(212,98,26,.15),transparent 70%);top:10px;right:-10px;animation:orb2Drift 11s ease-in-out infinite alternate;}
+.orb3{width:100px;height:100px;background:radial-gradient(circle,rgba(200,164,90,.12),transparent 70%);bottom:50px;right:40px;animation:orb3Drift 17s ease-in-out infinite alternate;}
+@keyframes orb1Drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.15)}}
+@keyframes orb2Drift{0%{transform:translate(0,0)}100%{transform:translate(-20px,25px)}}
+@keyframes orb3Drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-15px,-20px) scale(.85)}}
+
+/* Scanline shimmer */
+.hero::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.012) 2px,rgba(255,255,255,.012) 4px);
+  pointer-events:none;z-index:1;}
+
 .hero-content{position:relative;z-index:2;text-align:center}
-.hero-eyebrow{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;animation:fadeUp .9s .15s both;}
-.hero-title{font-family:'Bodoni Moda',serif;font-size:54px;font-weight:700;letter-spacing:3px;line-height:.92;background:linear-gradient(160deg,#fff 20%,var(--gold2) 55%,var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .9s .3s both;filter:drop-shadow(0 0 30px rgba(200,164,90,.25));}
-@keyframes titleIn{from{opacity:0;transform:translateY(18px) scale(.97)}}
-.hero-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:17px;color:var(--gold);margin-top:8px;letter-spacing:2px;animation:fadeUp .9s .5s both;}
-.hero-orn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;animation:fadeUp .9s .65s both;}
-.hero-orn::before,.hero-orn::after{content:'';flex:1;max-width:32px;height:1px;}
-.hero-orn::before{background:linear-gradient(90deg,transparent,var(--gold));}
-.hero-orn::after{background:linear-gradient(90deg,var(--gold),transparent);}
-.hero-orn span{font-size:10px;color:var(--gold)}
+.hero-eyebrow{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;animation:fadeUp .9s .15s both;}
+.hero-title{
+  font-family:'Bodoni Moda',serif;font-size:58px;font-weight:700;letter-spacing:3px;line-height:.9;
+  background:linear-gradient(160deg,#fff 20%,var(--gold2) 55%,var(--gold3) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titleReveal .9s .3s both;filter:drop-shadow(0 0 30px rgba(200,164,90,.3));}
+@keyframes titleReveal{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+.hero-sub{font-family:'EB Garamond',serif;font-style:italic;font-size:17px;color:var(--gold);margin-top:9px;letter-spacing:2px;animation:fadeUp .9s .5s both;}
+.hero-ornament{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;animation:fadeUp .9s .65s both;}
+.hero-ornament::before,.hero-ornament::after{content:'';flex:1;max-width:35px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+.hero-ornament::after{background:linear-gradient(90deg,var(--gold),transparent);}
+.hero-ornament span{font-size:10px;color:var(--gold);letter-spacing:2px}
 
-/* NAV */
-.nav{display:flex;background:rgba(13,11,9,.93);border-bottom:1px solid var(--rim2);position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}
-.nav-btn{flex:1;padding:14px 2px;background:none;border:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:9px;letter-spacing:1.8px;text-transform:uppercase;cursor:pointer;position:relative;transition:color .3s;}
+/* ══ NAV ══ */
+.nav{display:flex;background:rgba(13,11,9,.92);border-bottom:1px solid var(--rim2);position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}
+.nav-btn{flex:1;padding:15px 4px;background:none;border:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;transition:color .3s;}
 .nav-btn.active{color:var(--gold)}
-.nav-btn.active::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(200,164,90,.04));pointer-events:none;}
 .nav-glow{position:absolute;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transition:left .4s cubic-bezier(.77,0,.18,1),width .4s cubic-bezier(.77,0,.18,1);pointer-events:none;}
+.nav-btn.active::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(200,164,90,.04));pointer-events:none;}
 
-/* PAGES */
+/* ══ PAGE TRANSITIONS ══ */
 .page{display:none;padding-bottom:110px}
 .page.active{display:block;animation:pageIn .4s cubic-bezier(.25,.1,.25,1)}
-@keyframes pageIn{from{opacity:0;transform:translateY(8px)}}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* SECTION */
-.s-head{padding:24px 20px 0}
-.s-title{font-family:'Bodoni Moda',serif;font-size:26px;font-weight:400;line-height:1}
+/* ══ SECTION HEAD ══ */
+.s-head{padding:26px 20px 0}
+.s-title{font-family:'Bodoni Moda',serif;font-size:27px;font-weight:400;line-height:1}
 .s-title em{color:var(--gold);font-style:normal}
 .s-rule{height:1px;margin:10px 20px 0;background:linear-gradient(90deg,rgba(200,164,90,.4),transparent);}
 
-/* CATEGORIES */
-.cat-wrap{padding:16px 20px 12px;overflow-x:auto;scrollbar-width:none;display:flex;gap:8px}
+/* ══ CATEGORIES ══ */
+.cat-wrap{padding:18px 20px 14px;overflow-x:auto;scrollbar-width:none;display:flex;gap:8px}
 .cat-wrap::-webkit-scrollbar{display:none}
 .cat-pill{flex-shrink:0;padding:8px 18px;border-radius:30px;border:1px solid var(--rim2);background:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .25s;white-space:nowrap;position:relative;overflow:hidden;}
 .cat-pill::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold),var(--gold2));opacity:0;transition:opacity .25s;}
@@ -69,169 +90,175 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .cat-pill.active{border-color:var(--gold);color:var(--void);}
 .cat-pill.active::before{opacity:1}
 
-/* MENU SKELETON */
-.skeleton-list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
-.skeleton-card{height:108px;background:var(--card);border-radius:var(--r);overflow:hidden;position:relative;}
-.skeleton-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:shimmer 1.4s infinite;}
-@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
-
-/* MENU CARDS */
+/* ══ MENU ══ */
 .menu-grid{padding:0 16px;display:flex;flex-direction:column;gap:10px}
-.mcard{display:flex;background:var(--card);border:1px solid var(--rim2);border-radius:var(--r);overflow:hidden;position:relative;opacity:0;transform:translateY(16px) scale(.99);}
+.mcard{display:flex;background:var(--card);border:1px solid var(--rim2);border-radius:var(--r);overflow:hidden;position:relative;
+  transition:border-color .3s,box-shadow .3s;
+  opacity:0;transform:translateY(18px) scale(.99);}
 .mcard.in{animation:cardIn .45s cubic-bezier(.34,1.1,.64,1) forwards}
 @keyframes cardIn{to{opacity:1;transform:none}}
 .mcard:active{transform:scale(.985)!important;transition:transform .1s}
+
+/* shimmer loading */
 .mcard-img-wrap{position:relative;width:105px;flex-shrink:0;overflow:hidden;background:var(--card2);}
-.mcard-img{width:100%;height:100%;object-fit:cover;min-height:108px;display:block;transition:transform .55s,opacity .3s;opacity:0;}
+.mcard-img-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);transform:translateX(-100%);animation:imgShimmer 1.5s ease infinite;}
+@keyframes imgShimmer{to{transform:translateX(100%)}}
+.mcard-img{width:100%;height:100%;object-fit:cover;min-height:108px;display:block;transition:transform .55s cubic-bezier(.25,.1,.25,1),opacity .3s;opacity:0;}
 .mcard-img.loaded{opacity:1}
 .mcard:hover .mcard-img{transform:scale(1.07)}
 .mcard-img-overlay{position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--card));}
-.mcard-body{flex:1;padding:13px 13px 13px 2px;display:flex;flex-direction:column;justify-content:space-between;}
-.mcard-name{font-family:'Bodoni Moda',serif;font-size:15px;line-height:1.2;margin-bottom:3px;}
-.mcard-desc{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--fog);line-height:1.35;flex:1;}
-.mcard-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;}
-.mcard-price{font-size:14px;font-weight:400;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.add-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--gold);background:none;color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+
+.mcard-body{flex:1;padding:14px 14px 14px 2px;display:flex;flex-direction:column;justify-content:space-between;}
+.mcard-name{font-family:'Bodoni Moda',serif;font-size:15.5px;line-height:1.2;margin-bottom:4px;}
+.mcard-desc{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--fog);line-height:1.4;flex:1;}
+.mcard-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.mcard-price{font-size:15px;font-weight:400;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mcard-action{display:flex;align-items:center}
+
+/* Add btn */
+.add-btn{width:33px;height:33px;border-radius:50%;border:1.5px solid var(--gold);background:none;color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
 .add-btn::before{content:'';position:absolute;inset:0;background:var(--gold);border-radius:50%;transform:scale(0);transition:transform .3s cubic-bezier(.34,1.4,.64,1);}
 .add-btn:active::before{transform:scale(1)}
-.add-btn .plus{position:relative;z-index:1;pointer-events:none;line-height:1;}
+.add-btn .plus{position:relative;z-index:1;pointer-events:none;transition:color .1s;line-height:1;}
 .add-btn:active .plus{color:var(--void)}
-.qty-ctrl{display:flex;align-items:center;gap:6px}
-.qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--rim);background:none;color:var(--cream);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+
+/* Qty */
+.qty-ctrl{display:flex;align-items:center;gap:7px}
+.qty-btn{width:29px;height:29px;border-radius:50%;border:1px solid var(--rim);background:none;color:var(--cream);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
 .qty-btn:active{border-color:var(--gold);color:var(--gold);transform:scale(.88)}
-.qty-num{font-size:14px;font-weight:500;min-width:18px;text-align:center;}
-.qty-num.bump{animation:bump .22s ease}
-@keyframes bump{50%{transform:scale(1.45)}}
+.qty-num{font-size:15px;font-weight:500;min-width:20px;text-align:center;}
+.qty-num.bump{animation:numBump .22s ease}
+@keyframes numBump{0%,100%{transform:scale(1)}50%{transform:scale(1.45)}}
+
+/* Cart badge */
 .cart-badge{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--void);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;}
 .cart-badge.pop{animation:badgePop .3s cubic-bezier(.34,1.6,.64,1)}
-@keyframes badgePop{from{transform:scale(0)}}
+@keyframes badgePop{0%{transform:scale(0)}100%{transform:scale(1)}}
 
-/* BOOKING */
-.book-form{padding:4px 20px;display:flex;flex-direction:column;gap:20px}
-.f-group{display:flex;flex-direction:column;gap:8px}
+/* ══ BOOKING ══ */
+.book-form{padding:4px 20px;display:flex;flex-direction:column;gap:22px}
+.f-group{display:flex;flex-direction:column;gap:9px}
 .f-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);}
-.f-input,.f-textarea{background:var(--card);border:1px solid var(--rim2);border-radius:12px;padding:13px 16px;color:var(--cream);font-family:'Jost',sans-serif;font-size:15px;font-weight:300;outline:none;transition:border-color .25s,box-shadow .25s,background .25s;width:100%;-webkit-appearance:none;appearance:none;}
-.f-input:focus,.f-textarea:focus{border-color:rgba(200,164,90,.5);box-shadow:0 0 0 3px rgba(200,164,90,.07);background:var(--card2);}
+.f-input,.f-select,.f-textarea{
+  background:var(--card);border:1px solid var(--rim2);border-radius:12px;
+  padding:14px 16px;color:var(--cream);font-family:'Jost',sans-serif;font-size:15px;font-weight:300;
+  outline:none;transition:border-color .25s,box-shadow .25s,background .25s;
+  width:100%;-webkit-appearance:none;appearance:none;}
+.f-input:focus,.f-select:focus,.f-textarea:focus{
+  border-color:rgba(200,164,90,.5);box-shadow:0 0 0 3px rgba(200,164,90,.07);background:var(--card2);}
 .f-input::placeholder{color:var(--fog)}
 .f-textarea{resize:none}
+
+/* Phone input with prefix */
 .phone-wrap{position:relative}
-.phone-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--cream);font-size:15px;pointer-events:none;}
+.phone-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--cream);font-size:15px;pointer-events:none;font-family:'Jost',sans-serif;}
 .phone-input{padding-left:40px!important}
-.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.t-btn{padding:10px 0;border:1px solid var(--rim2);border-radius:12px;background:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;transition:all .25s;}
-.t-btn .tt{display:block;font-size:13px;}
-.t-btn .ts{display:block;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+/* Time grid */
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.t-btn{padding:11px 0;border:1px solid var(--rim2);border-radius:12px;background:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:13px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.t-btn .t-time{display:block;font-size:13px;}
+.t-btn .t-stat{display:block;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.t-btn.free{color:var(--fog)}
 .t-btn.free:hover{border-color:rgba(200,164,90,.3);color:var(--cream)}
+.t-btn.free::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(200,164,90,.07),transparent);opacity:0;transition:opacity .25s;}
+.t-btn.free:hover::after{opacity:1}
 .t-btn.sel{background:linear-gradient(135deg,rgba(200,164,90,.15),rgba(200,164,90,.05));border-color:var(--gold);color:var(--gold);}
-.t-btn.sel .ts{color:var(--gold)}
-.t-btn.busy{opacity:.38;cursor:not-allowed;background:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(255,255,255,.01) 5px,rgba(255,255,255,.01) 10px);}
-.t-btn.busy .ts{color:var(--ember)}
+.t-btn.sel .t-stat{color:var(--gold)}
+.t-btn.busy{opacity:.4;cursor:not-allowed;background:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(255,255,255,.012) 5px,rgba(255,255,255,.012) 10px);}
+.t-btn.busy .t-stat{color:var(--ember)}
+
+/* Guests */
 .guest-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.g-btn{padding:12px 0;border:1px solid var(--rim2);border-radius:12px;background:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:15px;cursor:pointer;transition:all .22s;}
+.g-btn{padding:13px 0;border:1px solid var(--rim2);border-radius:12px;background:none;color:var(--fog);font-family:'Jost',sans-serif;font-size:15px;cursor:pointer;transition:all .22s;}
 .g-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:var(--void);font-weight:500;}
-.cta-btn{width:100%;padding:17px;background:linear-gradient(110deg,var(--gold) 0%,var(--gold2) 40%,var(--gold3) 70%,var(--gold2) 100%);background-size:300% 100%;border:none;border-radius:14px;color:var(--void);font-family:'Bodoni Moda',serif;font-size:17px;font-weight:700;letter-spacing:.5px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s;animation:btnShine 4s linear infinite;}
+
+/* CTA button */
+.cta-btn{
+  width:100%;padding:18px;
+  background:linear-gradient(110deg,var(--gold) 0%,var(--gold2) 40%,var(--gold3) 70%,var(--gold2) 100%);
+  background-size:300% 100%;
+  border:none;border-radius:14px;color:var(--void);
+  font-family:'Bodoni Moda',serif;font-size:17px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .3s;
+  animation:btnShine 4s linear infinite;}
 @keyframes btnShine{0%{background-position:100% 0}100%{background-position:-100% 0}}
-.cta-btn:active{transform:scale(.98)}
+.cta-btn:active{transform:scale(.98);box-shadow:none}
 .cta-btn:disabled{opacity:.35;pointer-events:none;animation:none}
-.cta-btn::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);animation:glint 4s ease infinite 2s;}
-@keyframes glint{0%,100%{left:-100%}50%{left:150%}}
+.cta-btn::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:btnGlint 4s ease infinite 2s;}
+@keyframes btnGlint{0%,100%{left:-100%}50%{left:150%}}
+
+/* Ripple */
 .rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);animation:rplAnim .55s linear;pointer-events:none;}
 @keyframes rplAnim{to{transform:scale(4);opacity:0}}
 
-/* ORDER */
+/* ══ ORDER ══ */
 .order-list{padding:0 16px;display:flex;flex-direction:column;gap:8px}
-.oitem{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--rim2);border-radius:12px;padding:11px 13px;animation:slideIn .3s ease;}
+.oitem{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--rim2);border-radius:12px;padding:12px 14px;animation:slideIn .3s ease;}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}}
-.oitem-img{width:46px;height:46px;border-radius:8px;object-fit:cover}
-.oitem-name{font-family:'Bodoni Moda',serif;font-size:14px}
+.oitem-img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.oitem-name{font-family:'Bodoni Moda',serif;font-size:14.5px}
 .oitem-qty{font-size:11px;color:var(--fog);margin-top:2px}
-.oitem-price{font-size:13px;font-weight:400;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-left:auto;}
-.order-summary{margin:13px 20px 0;background:var(--card);border:1px solid var(--rim2);border-radius:14px;padding:17px;}
-.sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--fog);padding:3px 0}
-.sum-row.total{font-family:'Bodoni Moda',serif;font-size:18px;color:var(--cream);border-top:1px solid var(--rim);margin-top:10px;padding-top:13px}
+.oitem-price{font-size:14px;font-weight:400;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-left:auto;}
+.order-summary{margin:14px 20px 0;background:var(--card);border:1px solid var(--rim2);border-radius:14px;padding:18px;}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--fog);padding:4px 0}
+.sum-row.total{font-family:'Bodoni Moda',serif;font-size:18px;color:var(--cream);border-top:1px solid var(--rim);margin-top:10px;padding-top:14px}
 .sum-row.total span:last-child{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.empty-state{text-align:center;padding:65px 20px;animation:fadeUp .5s ease}
-.empty-icon{font-size:48px;margin-bottom:13px}
-.empty-txt{font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:var(--fog);line-height:1.6}
+.empty-state{text-align:center;padding:70px 20px;animation:fadeUp .5s ease}
+.empty-icon{font-size:52px;margin-bottom:14px}
+.empty-txt{font-family:'EB Garamond',serif;font-style:italic;font-size:19px;color:var(--fog);line-height:1.6}
 
-/* MY BOOKINGS */
-.my-bookings-wrap{padding:4px 20px}
-.phone-search{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;background:var(--card);border:1px solid var(--rim2);border-radius:16px;padding:20px;}
-.search-hint{font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:var(--fog);line-height:1.5;margin-bottom:4px;}
-.b-card{background:var(--card);border:1px solid var(--rim2);border-radius:14px;padding:18px;margin-bottom:10px;animation:fadeUp .4s ease;}
-.b-card.cancelled{opacity:.5;border-style:dashed;}
-.b-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.b-card-id{font-family:'Bodoni Moda',serif;font-size:16px;}
-.b-status{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500;}
-.b-status.confirmed{background:rgba(76,175,130,.15);color:var(--green);}
-.b-status.cancelled{background:rgba(212,98,26,.12);color:var(--ember);}
-.b-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:14px;}
-.b-row-icon{font-size:14px;width:20px;flex-shrink:0;}
-.b-comment{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:var(--fog);margin-top:6px;}
-.cancel-btn{width:100%;margin-top:14px;padding:12px;background:rgba(212,98,26,.12);border:1px solid rgba(212,98,26,.3);border-radius:12px;color:var(--ember);font-family:'Jost',sans-serif;font-size:13px;font-weight:500;letter-spacing:.5px;cursor:pointer;transition:all .2s;}
-.cancel-btn:active{background:rgba(212,98,26,.25)}
-
-/* ABOUT */
+/* ══ ABOUT ══ */
 .about-wrap{padding:4px 20px}
-.about-img-wrap{position:relative;height:190px;border-radius:16px;overflow:hidden;margin-bottom:18px;}
-.about-img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.about-img-wrap{position:relative;height:195px;border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.about-img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
 .about-img-wrap:hover .about-img{transform:scale(1.04)}
 .about-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(6,5,4,.65));}
-.about-txt{font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:#c2b8ad;margin-bottom:16px}
+.about-txt{font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:#c2b8ad;margin-bottom:18px}
 .info-list{display:flex;flex-direction:column;gap:8px}
-.info-item{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--rim2);border-radius:12px;padding:14px 16px;transition:border-color .25s,background .25s;text-decoration:none;color:inherit;}
+.info-item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--rim2);border-radius:12px;padding:14px 16px;transition:border-color .25s,background .25s;text-decoration:none;color:inherit;}
 .info-item:hover{border-color:var(--rim);background:var(--card2)}
 .info-item:active{transform:scale(.98)}
-.info-icon{font-size:20px;width:26px;text-align:center;flex-shrink:0}
+.info-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
 .info-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
 .info-val{font-size:14px;margin-top:3px}
-.info-arrow{margin-left:auto;color:var(--fog);font-size:12px;opacity:.5}
+.info-arrow{margin-left:auto;color:var(--fog);font-size:12px;opacity:.6}
 
-/* MAPS MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(6,5,4,.88);z-index:600;align-items:flex-end;justify-content:center;}
-.modal-overlay.show{display:flex}
-.modal-box{background:var(--card2);border-radius:20px 20px 0 0;padding:24px 20px 44px;width:100%;max-width:500px;animation:slideUpM .3s cubic-bezier(.34,1.1,.64,1)}
-@keyframes slideUpM{from{transform:translateY(100%)}}
-.modal-title{font-family:'Bodoni Moda',serif;font-size:19px;margin-bottom:5px}
-.modal-sub{font-size:13px;color:var(--fog);margin-bottom:20px}
-.modal-btns{display:flex;flex-direction:column;gap:10px}
-.map-btn{display:block;text-align:center;text-decoration:none;padding:14px;border-radius:14px;font-family:'Bodoni Moda',serif;font-size:15px;font-weight:700;cursor:pointer;border:none;}
-.map-btn.yandex{background:linear-gradient(135deg,#fc4c4e,#fd6060);color:#fff;}
-.map-btn.google{background:linear-gradient(135deg,#4285F4,#34A853);color:#fff;}
-.modal-cancel{padding:12px;background:none;border:1px solid var(--rim);border-radius:12px;color:var(--fog);font-family:'Jost',sans-serif;font-size:14px;cursor:pointer;width:100%;}
-
-/* TOAST */
-.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card2);border:1px solid var(--rim);color:var(--cream);padding:10px 22px;border-radius:30px;font-size:13px;opacity:0;z-index:1000;transition:all .35s cubic-bezier(.34,1.3,.64,1);pointer-events:none;white-space:nowrap;}
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card2);border:1px solid var(--rim);color:var(--cream);padding:10px 22px;border-radius:30px;font-size:13px;opacity:0;z-index:1000;transition:all .35s cubic-bezier(.34,1.3,.64,1);pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* SUCCESS */
+/* ══ SUCCESS OVERLAY ══ */
 .success-overlay{display:none;position:fixed;inset:0;background:rgba(6,5,4,.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
 .success-overlay.show{display:flex;animation:overlayIn .45s cubic-bezier(.34,1.1,.64,1)}
-@keyframes overlayIn{from{opacity:0;transform:scale(.93)}}
+@keyframes overlayIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+
+/* Particles container */
 .sparks{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .spark{position:absolute;border-radius:50%;animation:sparkFly var(--dur,1s) var(--del,0s) ease-out both;}
-@keyframes sparkFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
-.s-rings{position:relative;width:96px;height:96px;margin-bottom:22px}
-.s-ring{position:absolute;border-radius:50%;border:1px solid;animation:ringExp 1.5s ease-out infinite;}
+@keyframes sparkFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx,0px),var(--ty,0px)) scale(0);opacity:0}}
+
+/* Rings */
+.success-rings{position:relative;width:100px;height:100px;margin-bottom:24px}
+.s-ring{position:absolute;border-radius:50%;border:1px solid;animation:ringExpand 1.5s ease-out infinite;}
 .s-ring:nth-child(1){inset:0;border-color:rgba(200,164,90,.6);animation-delay:0s}
-.s-ring:nth-child(2){inset:-11px;border-color:rgba(200,164,90,.3);animation-delay:.3s}
-.s-ring:nth-child(3){inset:-22px;border-color:rgba(200,164,90,.1);animation-delay:.6s}
-@keyframes ringExp{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.3);opacity:0}}
-.s-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;animation:iconDrop .5s .15s cubic-bezier(.34,1.5,.64,1) both}
+.s-ring:nth-child(2){inset:-12px;border-color:rgba(200,164,90,.3);animation-delay:.3s}
+.s-ring:nth-child(3){inset:-24px;border-color:rgba(200,164,90,.1);animation-delay:.6s}
+@keyframes ringExpand{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.s-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:38px;animation:iconDrop .5s .15s cubic-bezier(.34,1.5,.64,1) both}
 @keyframes iconDrop{from{transform:scale(0) rotate(-30deg);opacity:0}}
-.s-title{font-family:'Bodoni Moda',serif;font-size:30px;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:11px;animation:fadeUp .45s .3s both;}
-.s-text{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--fog);line-height:1.75;margin-bottom:30px;white-space:pre-line;animation:fadeUp .45s .4s both;}
-.s-cta{width:100%;max-width:285px;animation:fadeUp .45s .5s both}
 
-/* LOADER */
-.loader{display:flex;justify-content:center;align-items:center;padding:50px;gap:6px;}
-.loader-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:loaderBounce .8s ease-in-out infinite alternate;}
-.loader-dot:nth-child(2){animation-delay:.15s}
-.loader-dot:nth-child(3){animation-delay:.3s}
-@keyframes loaderBounce{from{transform:translateY(0);opacity:.4}to{transform:translateY(-10px);opacity:1}}
+.success-title{font-family:'Bodoni Moda',serif;font-size:32px;font-weight:700;
+  background:linear-gradient(135deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;animation:fadeUp .45s .3s both;}
+.success-text{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--fog);line-height:1.75;margin-bottom:32px;white-space:pre-line;animation:fadeUp .45s .4s both;}
+.success-cta{width:100%;max-width:290px;animation:fadeUp .45s .5s both}
 
+/* ══ UTILS ══ */
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .pb{height:24px}
+@keyframes slideUpModal{from{transform:translateY(100%)}to{transform:none}}
 </style>
 </head>
 <body>
@@ -241,11 +268,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="hero-bg"></div>
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Fine Dining · Москва</div>
     <h1 class="hero-title">Monsieur</h1>
     <p class="hero-sub">cuisine française</p>
-    <div class="hero-orn"><span>✦</span></div>
+    <div class="hero-ornament"><span>✦</span></div>
   </div>
 </div>
 
@@ -254,7 +282,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <button class="nav-btn active" data-page="menu">Меню</button>
   <button class="nav-btn" data-page="booking">Бронь</button>
   <button class="nav-btn" data-page="order">Заказ <span class="cart-badge" id="cartBadge" style="display:none">0</span></button>
-  <button class="nav-btn" data-page="mybookings">Мои брони</button>
   <button class="nav-btn" data-page="about">О нас</button>
   <div class="nav-glow" id="navGlow"></div>
 </nav>
@@ -264,13 +291,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="s-head"><div class="s-title">Наше <em>меню</em></div></div>
   <div class="s-rule"></div>
   <div class="cat-wrap" id="catWrap"></div>
-  <div id="menuContent">
-    <div class="skeleton-list">
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-    </div>
-  </div>
+  <div class="menu-grid" id="menuGrid"></div>
   <div class="pb"></div>
 </div>
 
@@ -278,7 +299,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <div id="page-booking" class="page">
   <div class="s-head"><div class="s-title">Забронировать <em>столик</em></div></div>
   <div class="s-rule"></div>
-  <div style="height:18px"></div>
+  <div style="height:20px"></div>
   <div class="book-form">
     <div class="f-group">
       <label class="f-label">Ваше имя</label>
@@ -297,7 +318,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
     <div class="f-group">
       <label class="f-label">Время</label>
-      <div class="time-grid" id="timeGrid"><div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div></div>
+      <div class="time-grid" id="timeGrid"></div>
     </div>
     <div class="f-group">
       <label class="f-label">Количество гостей</label>
@@ -321,30 +342,11 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="pb"></div>
 </div>
 
-<!-- ══ MY BOOKINGS ══ -->
-<div id="page-mybookings" class="page">
-  <div class="s-head"><div class="s-title">Мои <em>брони</em></div></div>
-  <div class="s-rule"></div>
-  <div style="height:18px"></div>
-  <div class="my-bookings-wrap">
-    <div class="phone-search">
-      <div class="search-hint">Введите номер телефона, указанный при бронировании</div>
-      <div class="phone-wrap">
-        <span class="phone-prefix">+7</span>
-        <input id="searchPhone" type="tel" class="f-input phone-input" placeholder="(900) 000-00-00" maxlength="15" inputmode="numeric"/>
-      </div>
-      <button class="cta-btn" onclick="searchBookings(event)">Найти брони</button>
-    </div>
-    <div id="bookingResults"></div>
-  </div>
-  <div class="pb"></div>
-</div>
-
 <!-- ══ ABOUT ══ -->
 <div id="page-about" class="page">
   <div class="s-head"><div class="s-title">О <em>ресторане</em></div></div>
   <div class="s-rule"></div>
-  <div style="height:18px"></div>
+  <div style="height:20px"></div>
   <div class="about-wrap">
     <div class="about-img-wrap">
       <img class="about-img" src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Зал"/>
@@ -352,6 +354,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <p class="about-txt">Monsieur — это пространство, где каждое блюдо рассказывает историю. Вдохновлённые традицией французской кухни, мы создаём вечера, которые остаются в памяти навсегда.</p>
     <p class="about-txt">Шеф Пьер Лефевр собрал команду из лучших кулинаров Европы. Продукты поставляются с ферм Прованса и Бургундии.</p>
     <div class="info-list">
+      <!-- Адрес → открывает выбор карт -->
       <a class="info-item" href="#" onclick="openMaps(event)">
         <div class="info-icon">📍</div>
         <div><div class="info-lbl">Адрес</div><div class="info-val">Москва, ул. Кузнецкий Мост, 7</div></div>
@@ -361,6 +364,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <div class="info-icon">🕐</div>
         <div><div class="info-lbl">Часы работы</div><div class="info-val">Пн–Пт 12:00–23:00 · Сб–Вс 11:00–00:00</div></div>
       </div>
+      <!-- Телефон → звонок -->
       <a class="info-item" href="tel:+74951234567">
         <div class="info-icon">📞</div>
         <div><div class="info-lbl">Телефон</div><div class="info-val">+7 (495) 123-45-67</div></div>
@@ -375,175 +379,160 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="pb"></div>
 </div>
 
-<!-- MAPS MODAL -->
-<div class="modal-overlay" id="mapsModal" onclick="if(event.target===this)this.classList.remove('show')">
-  <div class="modal-box">
-    <div class="modal-title">Открыть в картах</div>
-    <div class="modal-sub">Кузнецкий Мост, 7, Москва</div>
-    <div class="modal-btns">
-      <a class="map-btn yandex" href="https://yandex.ru/maps/?text=Кузнецкий+Мост+7+Москва" target="_blank">🗺 Яндекс Карты</a>
-      <a class="map-btn google" href="https://www.google.com/maps/search/Кузнецкий+Мост+7+Москва" target="_blank">🌐 Google Maps</a>
-      <button class="modal-cancel" onclick="document.getElementById('mapsModal').classList.remove('show')">Отмена</button>
-    </div>
-  </div>
-</div>
-
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- SUCCESS -->
 <div class="success-overlay" id="successOverlay">
   <div class="sparks" id="sparks"></div>
-  <div class="s-rings"><div class="s-ring"></div><div class="s-ring"></div><div class="s-ring"></div><div class="s-center" id="sIcon">✓</div></div>
-  <div class="s-title" id="sTitle"></div>
-  <div class="s-text" id="sText"></div>
-  <div class="s-cta"><button class="cta-btn" onclick="closeSuccess()">Отлично!</button></div>
+  <div class="success-rings">
+    <div class="s-ring"></div><div class="s-ring"></div><div class="s-ring"></div>
+    <div class="s-center" id="sIcon">✓</div>
+  </div>
+  <div class="success-title" id="sTitle"></div>
+  <div class="success-text" id="sText"></div>
+  <div class="success-cta">
+    <button class="cta-btn" onclick="closeSuccess()">Отлично!</button>
+  </div>
+</div>
+
+<!-- MAPS MODAL -->
+<div id="mapsModal" style="display:none;position:fixed;inset:0;background:rgba(6,5,4,.85);z-index:600;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--card2);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;animation:slideUpModal .3s ease">
+    <div style="font-family:'Bodoni Moda',serif;font-size:18px;margin-bottom:6px">Открыть в картах</div>
+    <div style="font-size:13px;color:var(--fog);margin-bottom:20px">Кузнецкий Мост, 7, Москва</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <a href="https://yandex.ru/maps/?text=Кузнецкий+Мост+7+Москва" target="_blank" class="cta-btn" style="display:block;text-align:center;text-decoration:none;padding:14px">🗺 Яндекс Карты</a>
+      <a href="https://www.google.com/maps/search/Кузнецкий+Мост+7+Москва" target="_blank" class="cta-btn" style="display:block;text-align:center;text-decoration:none;padding:14px;background:linear-gradient(110deg,#4285F4,#34A853,#FBBC05,#EA4335);background-size:300% 100%;animation:btnShine 4s linear infinite">🌐 Google Maps</a>
+      <button onclick="document.getElementById('mapsModal').style.display='none'" style="padding:12px;background:none;border:1px solid var(--rim);border-radius:12px;color:var(--fog);font-family:'Jost',sans-serif;font-size:14px;cursor:pointer">Отмена</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ═══ CONFIG ═══
-   BASE_URL: адрес твоего сервера.
-   При разработке (ngrok/localhost) — url ngrok или http://localhost:5000
-   При деплое на Railway/VPS — url сервера
-*/
-const BASE_URL = window.location.origin; // автоматически берёт текущий домен
+/* ════════ DATA ════════ */
+const MENU=[
+  {id:1,cat:'starters',name:'Тартар из тунца',desc:'Свежий тунец, авокадо, икра тобико, лимон',price:890,img:'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=400&q=80'},
+  {id:2,cat:'starters',name:'Луковый суп',desc:'Карамелизированный лук, грюйер, крутон',price:590,img:'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80'},
+  {id:3,cat:'starters',name:'Фуа-гра',desc:'Утиная печень, карамелизированная груша, бриошь',price:1490,img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&q=80'},
+  {id:4,cat:'mains',name:'Утиная грудка',desc:'Magret de canard, соус из красного вина, тимьян',price:1890,img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80'},
+  {id:5,cat:'mains',name:'Дорадо на гриле',desc:'Прованские овощи, базиликовое масло',price:1650,img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80'},
+  {id:6,cat:'mains',name:'Говяжье филе',desc:'Стейк, картофельное пюре, трюфельный соус',price:2890,img:'https://images.unsplash.com/photo-1558030006-450675393462?w=400&q=80'},
+  {id:7,cat:'mains',name:'Ризотто с грибами',desc:'Портобелло, пармезан, трюфельное масло',price:1290,img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80'},
+  {id:8,cat:'desserts',name:'Крем-брюле',desc:'Классический, с ванилью Бурбон',price:490,img:'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=400&q=80'},
+  {id:9,cat:'desserts',name:'Тарт Татен',desc:'Яблочный перевёрнутый тарт, крем-фреш',price:550,img:'https://images.unsplash.com/photo-1559622214-f8a9850965bb?w=400&q=80'},
+  {id:10,cat:'desserts',name:'Шоколадный фондан',desc:'72% горький шоколад, ванильное мороженое',price:620,img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&q=80'},
+  {id:11,cat:'drinks',name:'Бокал Бургундии',desc:'Pinot Noir, домен Жан Гиво, 2020',price:890,img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80'},
+  {id:12,cat:'drinks',name:'Лимонад Monsieur',desc:'Лайм, базилик, мята, газированная вода',price:390,img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80'},
+  {id:13,cat:'drinks',name:'Кофе по-французски',desc:'Double espresso, горький шоколад, пена',price:350,img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=80'},
+];
+const CATS=[{id:'all',l:'Всё'},{id:'starters',l:'Закуски'},{id:'mains',l:'Основные'},{id:'desserts',l:'Десерты'},{id:'drinks',l:'Напитки'}];
+const ALL_TIMES=['12:00','13:00','14:00','15:00','17:00','18:00','19:00','20:00','21:00','22:00'];
 
-const ALL_TIMES = ['12:00','13:00','14:00','15:00','17:00','18:00','19:00','20:00','21:00','22:00'];
-const CAT_LABELS = {all:'Всё', starters:'Закуски', mains:'Основные', desserts:'Десерты', drinks:'Напитки'};
+/* ════════ STATE ════════ */
+let cart={}, activeCat='all', selGuests=2, selTime='', pendingData=null;
 
-/* ═══ STATE ═══ */
-let menuData = {};       // {category: [{id,name,desc,price,img},...]}
-let cart = {};
-let activeCat = 'all';
-let selGuests = 2;
-let selTime = '';
-let pendingData = null;
-let bookedTimes = [];
+/* ════════ BOOKING PERSISTENCE ════════ */
+function getBooked(date){try{return JSON.parse(localStorage.getItem('bk_'+date)||'[]')}catch{return[]}}
+function saveBooked(date,time){const a=getBooked(date);if(!a.includes(time))a.push(time);localStorage.setItem('bk_'+date,JSON.stringify(a))}
 
-/* ═══ TELEGRAM ═══ */
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+/* ════════ TELEGRAM ════════ */
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
 
-/* ═══ NAV ═══ */
-const navEl = document.getElementById('nav');
-const glow  = document.getElementById('navGlow');
-function moveGlow(btn) {
-  const r = btn.getBoundingClientRect(), nr = navEl.getBoundingClientRect();
-  glow.style.left  = (r.left - nr.left) + 'px';
-  glow.style.width = r.width + 'px';
+/* ════════ SEND TO BOT — исправленная версия ════════ */
+function sendToBot(data){
+  try{
+    if(tg && tg.sendData){
+      tg.sendData(JSON.stringify(data));
+    } else {
+      // Fallback для тестирования вне Telegram
+      fetch('/api/webapp-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+    }
+  } catch(e){
+    console.error('sendData error:',e);
+  }
 }
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+/* ════════ NAV SLIDER ════════ */
+const navEl=document.getElementById('nav');
+const glow=document.getElementById('navGlow');
+function moveGlow(btn){
+  const r=btn.getBoundingClientRect(),nr=navEl.getBoundingClientRect();
+  glow.style.left=(r.left-nr.left)+'px';
+  glow.style.width=r.width+'px';
+}
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    document.getElementById('page-'+btn.dataset.page).classList.add('active');
     moveGlow(btn);
-    if (btn.dataset.page === 'order') renderOrder();
-    if (btn.dataset.page === 'booking') loadBookedTimes();
+    if(btn.dataset.page==='order')renderOrder();
+    if(btn.dataset.page==='booking')renderTimeGrid();
     window.scrollTo({top:0,behavior:'smooth'});
   });
 });
-setTimeout(() => moveGlow(document.querySelector('.nav-btn.active')), 50);
+setTimeout(()=>moveGlow(document.querySelector('.nav-btn.active')),50);
 
-/* ═══ LOAD MENU FROM API ═══ */
-async function loadMenu() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/menu`);
-    const json = await res.json();
-    if (json.ok) {
-      menuData = json.menu;
-      buildCats();
-      buildMenu();
-    }
-  } catch (e) {
-    document.getElementById('menuContent').innerHTML =
-      '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-txt">Не удалось загрузить меню.<br>Проверьте подключение.</div></div>';
-  }
+/* ════════ CATEGORIES ════════ */
+function buildCats(){
+  const w=document.getElementById('catWrap');
+  w.innerHTML=CATS.map(c=>`<button class="cat-pill ${c.id===activeCat?'active':''}" data-cat="${c.id}"><span>${c.l}</span></button>`).join('');
+  w.querySelectorAll('.cat-pill').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;buildCats();buildMenu();}));
 }
 
-/* ═══ CATEGORIES ═══ */
-function buildCats() {
-  const allCats = ['all', ...Object.keys(menuData)];
-  const wrap = document.getElementById('catWrap');
-  wrap.innerHTML = allCats.map(c =>
-    `<button class="cat-pill ${c===activeCat?'active':''}" data-cat="${c}"><span>${CAT_LABELS[c]||c}</span></button>`
-  ).join('');
-  wrap.querySelectorAll('.cat-pill').forEach(b => b.addEventListener('click', () => {
-    activeCat = b.dataset.cat; buildCats(); buildMenu();
-  }));
-}
-
-/* ═══ BUILD MENU ═══ */
-function buildMenu() {
-  let items = [];
-  if (activeCat === 'all') {
-    Object.values(menuData).forEach(arr => items.push(...arr));
-  } else {
-    items = menuData[activeCat] || [];
-  }
-
-  if (!items.length) {
-    document.getElementById('menuContent').innerHTML =
-      '<div class="empty-state"><div class="empty-icon">🍽</div><div class="empty-txt">В этой категории<br>пока нет блюд</div></div>';
-    return;
-  }
-
-  const grid = document.createElement('div');
-  grid.className = 'menu-grid';
-  grid.innerHTML = items.map((item, i) => `
-    <div class="mcard" id="mcard_${item.id}" style="animation-delay:${i*45}ms">
+/* ════════ MENU — полная перестройка только при смене категории ════════ */
+function buildMenu(){
+  const grid=document.getElementById('menuGrid');
+  const items=activeCat==='all'?MENU:MENU.filter(m=>m.cat===activeCat);
+  grid.innerHTML=items.map((item,i)=>{
+    return `<div class="mcard" id="mcard_${item.id}" style="animation-delay:${i*45}ms">
       <div class="mcard-img-wrap">
-        <img class="mcard-img" data-src="${item.image_url}" alt="${item.name}"/>
+        <img class="mcard-img" data-src="${item.img}" alt="${item.name}"/>
         <div class="mcard-img-overlay"></div>
       </div>
       <div class="mcard-body">
         <div>
           <div class="mcard-name">${item.name}</div>
-          <div class="mcard-desc">${item.description}</div>
+          <div class="mcard-desc">${item.desc}</div>
         </div>
         <div class="mcard-foot">
           <div class="mcard-price">${item.price.toLocaleString()} ₽</div>
           <div class="mcard-action" id="action_${item.id}"></div>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
-  document.getElementById('menuContent').replaceChildren(grid);
-
-  // Lazy load images
-  grid.querySelectorAll('.mcard-img').forEach(img => {
-    img.onload = () => img.classList.add('loaded');
-    img.src = img.dataset.src;
+  // Lazy load images + fade in
+  grid.querySelectorAll('.mcard-img').forEach(img=>{
+    img.onload=()=>img.classList.add('loaded');
+    img.src=img.dataset.src;
   });
 
-  // Intersection observer
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }});
-  }, {threshold:0.04});
-  grid.querySelectorAll('.mcard').forEach(c => obs.observe(c));
+  // Intersection Observer для анимации карточек
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});
+  },{threshold:0.04});
+  grid.querySelectorAll('.mcard').forEach(c=>obs.observe(c));
 
-  items.forEach(item => renderAction(item.id));
+  // Render action areas
+  items.forEach(item=>renderAction(item.id));
 }
 
-function getAllItems() {
-  let all = [];
-  Object.values(menuData).forEach(arr => all.push(...arr));
-  return all;
-}
-
-function getItemById(id) {
-  return getAllItems().find(m => m.id === id);
-}
-
-function renderAction(id) {
-  const el = document.getElementById('action_' + id);
-  if (!el) return;
-  const qty = cart[id] || 0;
-  if (qty === 0) {
-    el.innerHTML = `<button class="add-btn" onclick="addItem(${id},this)"><span class="plus">+</span></button>`;
+/* ════════ КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ:
+   Обновляем ТОЛЬКО кнопку конкретной карточки, 
+   НЕ перестраиваем всё меню ════════ */
+function renderAction(id){
+  const el=document.getElementById('action_'+id);
+  if(!el)return;
+  const qty=cart[id]||0;
+  if(qty===0){
+    el.innerHTML=`<button class="add-btn" onclick="addItem(${id},this)"><span class="plus">+</span></button>`;
   } else {
-    el.innerHTML = `<div class="qty-ctrl">
+    el.innerHTML=`<div class="qty-ctrl">
       <button class="qty-btn" onclick="removeItem(${id})">−</button>
       <span class="qty-num" id="num_${id}">${qty}</span>
       <button class="qty-btn" onclick="addItem(${id})">+</button>
@@ -551,124 +540,119 @@ function renderAction(id) {
   }
 }
 
-function addItem(id, btn) {
-  cart[id] = (cart[id] || 0) + 1;
-  updateBadge(); renderAction(id);
-  const num = document.getElementById('num_' + id);
-  if (num) { num.classList.remove('bump'); void num.offsetWidth; num.classList.add('bump'); }
-  const item = getItemById(id);
-  if (item) showToast('✦  ' + item.name);
-  if (btn) addRipple(btn, null);
+function addItem(id,btn){
+  cart[id]=(cart[id]||0)+1;
+  updateBadge();
+  renderAction(id); // только эта карточка
+  const numEl=document.getElementById('num_'+id);
+  if(numEl){numEl.classList.remove('bump');void numEl.offsetWidth;numEl.classList.add('bump');}
+  const item=MENU.find(m=>m.id===id);
+  showToast('✦  '+item.name);
+  if(btn){addRipple(btn,null);}
 }
-function removeItem(id) {
-  if (!cart[id]) return;
+
+function removeItem(id){
+  if(!cart[id])return;
   cart[id]--;
-  if (!cart[id]) delete cart[id];
-  updateBadge(); renderAction(id);
-}
-function updateBadge() {
-  const total = Object.values(cart).reduce((a,b) => a+b, 0);
-  const badge = document.getElementById('cartBadge');
-  if (total > 0) { badge.style.display=''; badge.textContent=total; badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop'); }
-  else badge.style.display = 'none';
+  if(!cart[id])delete cart[id];
+  updateBadge();
+  renderAction(id); // только эта карточка
 }
 
-/* ═══ LOAD BOOKED TIMES FROM API ═══ */
-async function loadBookedTimes() {
-  const date = document.getElementById('bDate').value;
-  if (!date) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/booked-times?date=${date}`);
-    const json = await res.json();
-    if (json.ok) bookedTimes = json.booked;
-  } catch (e) {
-    bookedTimes = [];
-  }
-  renderTimeGrid();
+function updateBadge(){
+  const total=Object.values(cart).reduce((a,b)=>a+b,0);
+  const badge=document.getElementById('cartBadge');
+  if(total>0){badge.style.display='';badge.textContent=total;badge.classList.remove('pop');void badge.offsetWidth;badge.classList.add('pop');}
+  else badge.style.display='none';
 }
 
-/* ═══ TIME GRID ═══ */
-function renderTimeGrid() {
-  const grid = document.getElementById('timeGrid');
-  grid.innerHTML = ALL_TIMES.map(t => {
-    const isBusy = bookedTimes.includes(t);
-    const isSel  = t === selTime && !isBusy;
-    const cls    = isBusy ? 'busy' : isSel ? 'sel' : 'free';
-    const stat   = isBusy ? 'занято' : isSel ? 'выбрано' : 'свободно';
-    return `<button class="t-btn ${cls}" onclick="selectTime('${t}')" ${isBusy?'disabled':''}>
-      <span class="tt">${t}</span><span class="ts">${stat}</span>
-    </button>`;
-  }).join('');
-}
-
-function selectTime(t) {
-  if (bookedTimes.includes(t)) return;
-  selTime = t; renderTimeGrid();
-}
-
-/* ═══ GUESTS ═══ */
-function buildGuests() {
-  document.getElementById('guestGrid').innerHTML = [1,2,3,4,5,6].map(n =>
-    `<button class="g-btn ${n===selGuests?'active':''}" onclick="selGuest(${n})">${n}</button>`
-  ).join('');
-}
-function selGuest(n) { selGuests = n; buildGuests(); }
-
-/* ═══ PHONE MASK ═══ */
-function initPhoneMask(inputId) {
-  const inp = document.getElementById(inputId);
-  if (!inp) return;
-  inp.addEventListener('input', () => {
-    let v = inp.value.replace(/\D/g,'');
-    if (v.startsWith('7') || v.startsWith('8')) v = v.slice(1);
-    v = v.slice(0,10);
-    let mask = '';
-    if (v.length > 0) mask = '(' + v.slice(0,3);
-    if (v.length >= 3) mask += ') ' + v.slice(3,6);
-    else if (v.length > 0) mask += v.slice(3);
-    if (v.length >= 6) mask += '-' + v.slice(6,8);
-    if (v.length >= 8) mask += '-' + v.slice(8,10);
-    inp.value = mask;
+/* ════════ PHONE MASK ════════ */
+function initPhoneMask(){
+  const inp=document.getElementById('bPhone');
+  inp.addEventListener('input',e=>{
+    let v=inp.value.replace(/\D/g,'');
+    // Убираем ведущую 7 или 8 если вдруг ввели
+    if(v.startsWith('7')||v.startsWith('8'))v=v.slice(1);
+    v=v.slice(0,10);
+    let mask='';
+    if(v.length>0)mask='('+v.slice(0,3);
+    if(v.length>=3)mask+=') '+v.slice(3,6);
+    else if(v.length>0)mask+=v.slice(3);
+    if(v.length>=6)mask+='-'+v.slice(6,8);
+    if(v.length>=8)mask+='-'+v.slice(8,10);
+    inp.value=mask;
+  });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&inp.value.length===0)e.preventDefault();
   });
 }
 
-/* ═══ SUBMIT BOOKING ═══ */
-function submitBooking(e) {
-  addRipple(e.currentTarget, e);
-  const name    = document.getElementById('bName').value.trim();
-  const phone   = document.getElementById('bPhone').value.trim();
-  const date    = document.getElementById('bDate').value;
-  const comment = document.getElementById('bComment').value.trim();
-  if (!name || !phone || !date || !selTime) { showToast('⚠  Заполните все поля'); return; }
-
-  const data = {type:'booking', name, phone:'+7'+phone.replace(/\D/g,''), date, time:selTime, guests:selGuests, comment};
-  pendingData = data;
-
-  const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  const [y,m,d_] = date.split('-');
-  showSuccess('🥂', 'Бронь подтверждена!', `Столик на ${selGuests} ${gw(selGuests)}\n${+d_} ${months[+m-1]} · ${selTime}\n\nМы свяжемся для подтверждения`);
-  selTime = '';
-  bookedTimes.push(selTime); // optimistic update — обновится при следующем открытии
+/* ════════ TIME GRID ════════ */
+function renderTimeGrid(){
+  const date=document.getElementById('bDate').value;
+  const booked=getBooked(date);
+  const grid=document.getElementById('timeGrid');
+  grid.innerHTML=ALL_TIMES.map(t=>{
+    const isBusy=booked.includes(t);
+    const isSel=t===selTime&&!isBusy;
+    const cls=isBusy?'busy':isSel?'sel':'free';
+    const stat=isBusy?'занято':isSel?'выбрано':'свободно';
+    return `<button class="t-btn ${cls}" onclick="selectTime('${t}')" ${isBusy?'disabled':''}>
+      <span class="t-time">${t}</span>
+      <span class="t-stat">${stat}</span>
+    </button>`;
+  }).join('');
+}
+function selectTime(t){
+  const d=document.getElementById('bDate').value;
+  if(getBooked(d).includes(t))return;
+  selTime=t;renderTimeGrid();
 }
 
-/* ═══ ORDER ═══ */
-function renderOrder() {
-  const el  = document.getElementById('orderContent');
-  const keys = Object.keys(cart).map(Number);
-  if (!keys.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽</div><div class="empty-txt">Корзина пуста<br>Выберите блюда из меню</div></div>`;
+/* ════════ GUESTS ════════ */
+function buildGuests(){
+  document.getElementById('guestGrid').innerHTML=[1,2,3,4,5,6].map(n=>
+    `<button class="g-btn ${n===selGuests?'active':''}" onclick="selGuest(${n})">${n}</button>`
+  ).join('');
+}
+function selGuest(n){selGuests=n;buildGuests();}
+
+/* ════════ SUBMIT BOOKING ════════ */
+function submitBooking(e){
+  addRipple(e.currentTarget,e);
+  const name=document.getElementById('bName').value.trim();
+  const phone=document.getElementById('bPhone').value.trim();
+  const date=document.getElementById('bDate').value;
+  const comment=document.getElementById('bComment').value.trim();
+  if(!name||!phone||!date||!selTime){showToast('⚠  Заполните все поля');return;}
+
+  // Сохраняем время как занятое сразу
+  saveBooked(date,selTime);
+  renderTimeGrid();
+
+  const data={type:'booking',name,phone:'+7'+phone.replace(/\D/g,''),date,time:selTime,guests:selGuests,comment};
+  pendingData=data;
+  const d=new Date(date);
+  const months=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  showSuccess('🥂','Бронь подтверждена!',`Столик на ${selGuests} ${gw(selGuests)}\n${d.getDate()} ${months[d.getMonth()]} · ${selTime}\n\nМы свяжемся для подтверждения`);
+  selTime='';
+}
+
+/* ════════ RENDER ORDER ════════ */
+function renderOrder(){
+  const el=document.getElementById('orderContent');
+  const keys=Object.keys(cart).map(Number);
+  if(!keys.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🍽</div><div class="empty-txt">Корзина пуста<br>Выберите блюда из меню</div></div>`;
     return;
   }
-  let sub = 0;
-  const rows = keys.map(id => {
-    const m = getItemById(id); if(!m) return '';
-    const tot = m.price * cart[id]; sub += tot;
-    return `<div class="oitem"><img class="oitem-img" src="${m.image_url}"/>
-      <div class="oitem-info"><div class="oitem-name">${m.name}</div><div class="oitem-qty">${cart[id]} × ${m.price.toLocaleString()} ₽</div></div>
-      <div class="oitem-price">${tot.toLocaleString()} ₽</div></div>`;
+  let sub=0;
+  const rows=keys.map(id=>{
+    const m=MENU.find(x=>x.id===id);const tot=m.price*cart[id];sub+=tot;
+    return `<div class="oitem"><img class="oitem-img" src="${m.img}"/><div class="oitem-info"><div class="oitem-name">${m.name}</div><div class="oitem-qty">${cart[id]} × ${m.price.toLocaleString()} ₽</div></div><div class="oitem-price">${tot.toLocaleString()} ₽</div></div>`;
   }).join('');
-  const svc = Math.round(sub*.1), total = sub+svc;
-  el.innerHTML = `<div class="order-list">${rows}</div>
+  const svc=Math.round(sub*.1),total=sub+svc;
+  el.innerHTML=`<div class="order-list">${rows}</div>
   <div class="order-summary">
     <div class="sum-row"><span>Сумма</span><span>${sub.toLocaleString()} ₽</span></div>
     <div class="sum-row"><span>Сервисный сбор (10%)</span><span>${svc.toLocaleString()} ₽</span></div>
@@ -677,161 +661,96 @@ function renderOrder() {
   <div style="padding:16px 20px 0"><button class="cta-btn" onclick="submitOrder(event)">Оформить заказ</button></div>`;
 }
 
-function submitOrder(e) {
-  addRipple(e.currentTarget, e);
-  const keys = Object.keys(cart).map(Number);
-  if (!keys.length) return;
-  const items = keys.map(id => { const m=getItemById(id); return `${m.name} × ${cart[id]}`; });
-  const total = keys.reduce((s,id) => s + getItemById(id).price * cart[id], 0);
-  pendingData = {type:'order', items, total};
-  cart = {}; updateBadge();
-  showSuccess('🍽', 'Заказ принят!', `Ваш заказ передан на кухню\nОжидайте 30–40 минут\n\nСумма: ${total.toLocaleString()} ₽`);
+/* ════════ SUBMIT ORDER ════════ */
+function submitOrder(e){
+  addRipple(e.currentTarget,e);
+  const keys=Object.keys(cart).map(Number);
+  if(!keys.length)return;
+  const items=keys.map(id=>{const m=MENU.find(x=>x.id===id);return`${m.name} × ${cart[id]}`;});
+  const total=keys.reduce((s,id)=>s+MENU.find(x=>x.id===id).price*cart[id],0);
+  pendingData={type:'order',items,total};
+  cart={};updateBadge();
+  showSuccess('🍽','Заказ принят!',`Ваш заказ передан на кухню\nОжидайте 30–40 минут\n\nСумма: ${total.toLocaleString()} ₽`);
 }
 
-/* ═══ MY BOOKINGS (client search + cancel) ═══ */
-async function searchBookings(e) {
-  addRipple(e.currentTarget, e);
-  const phone = '+7' + document.getElementById('searchPhone').value.replace(/\D/g,'');
-  if (phone.length < 5) { showToast('Введите номер телефона'); return; }
-
-  const res_el = document.getElementById('bookingResults');
-  res_el.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/my-bookings?phone=${encodeURIComponent(phone)}`);
-    const json = await res.json();
-    if (!json.ok || !json.bookings.length) {
-      res_el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-txt">Броней не найдено.<br>Проверьте номер телефона.</div></div>';
-      return;
-    }
-    const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-    res_el.innerHTML = json.bookings.map(b => {
-      const [y,m,d_] = b.date.split('-');
-      const dateStr = `${+d_} ${months[+m-1]} ${y}`;
-      const isCancelled = b.status === 'cancelled';
-      return `<div class="b-card ${isCancelled?'cancelled':''}" id="bcard_${b.id}">
-        <div class="b-card-header">
-          <div class="b-card-id">Бронь #${b.id}</div>
-          <div class="b-status ${b.status}">${b.status==='confirmed'?'✅ Подтверждена':'❌ Отменена'}</div>
-        </div>
-        <div class="b-row"><span class="b-row-icon">📅</span>${dateStr} в ${b.time}</div>
-        <div class="b-row"><span class="b-row-icon">👥</span>${b.guests} ${gw(b.guests)}</div>
-        ${b.comment ? `<div class="b-comment">💬 ${b.comment}</div>` : ''}
-        ${!isCancelled ? `<button class="cancel-btn" onclick="cancelBooking(${b.id},'${phone}',this)">Отменить бронирование</button>` : ''}
-      </div>`;
-    }).join('');
-  } catch (err) {
-    res_el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-txt">Ошибка сети.<br>Попробуйте позже.</div></div>';
-  }
-}
-
-async function cancelBooking(bookingId, phone, btn) {
-  btn.disabled = true;
-  btn.textContent = 'Отменяем…';
-  try {
-    const res = await fetch(`${BASE_URL}/api/cancel-booking`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({booking_id: bookingId, phone})
-    });
-    const json = await res.json();
-    if (json.ok) {
-      const card = document.getElementById('bcard_' + bookingId);
-      if (card) {
-        card.classList.add('cancelled');
-        card.querySelector('.b-status').textContent = '❌ Отменена';
-        card.querySelector('.b-status').className = 'b-status cancelled';
-        btn.remove();
-      }
-      showToast('✅ Бронь отменена');
-      // Также уведомляем бота
-      if (tg?.sendData) {
-        tg.sendData(JSON.stringify({type:'cancel_booking', booking_id:bookingId}));
-      }
-    } else {
-      btn.disabled = false;
-      btn.textContent = 'Отменить бронирование';
-      showToast('⚠ Не удалось отменить. Попробуйте позже.');
-    }
-  } catch (e) {
-    btn.disabled = false;
-    btn.textContent = 'Отменить бронирование';
-    showToast('⚠ Ошибка сети');
-  }
-}
-
-/* ═══ SEND TO BOT ═══ */
-function sendToBot(data) {
-  try {
-    if (tg?.sendData) { tg.sendData(JSON.stringify(data)); }
-    else {
-      fetch(`${BASE_URL}/api/webapp-data`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}).catch(()=>{});
-    }
-  } catch(e) { console.error(e); }
-}
-
-/* ═══ SUCCESS ═══ */
-function showSuccess(icon, title, text) {
-  document.getElementById('sIcon').textContent = icon;
-  document.getElementById('sTitle').textContent = title;
-  document.getElementById('sText').textContent = text;
+/* ════════ SUCCESS ════════ */
+function showSuccess(icon,title,text){
+  document.getElementById('sIcon').textContent=icon;
+  document.getElementById('sTitle').textContent=title;
+  document.getElementById('sText').textContent=text;
   document.getElementById('successOverlay').classList.add('show');
   spawnSparks();
 }
-function closeSuccess() {
+
+/* ════════ CLOSE SUCCESS — здесь отправляем данные ════════ */
+function closeSuccess(){
   document.getElementById('successOverlay').classList.remove('show');
-  if (pendingData) { sendToBot(pendingData); pendingData = null; }
+  if(pendingData){
+    sendToBot(pendingData);
+    pendingData=null;
+  }
 }
-function spawnSparks() {
-  const c = document.getElementById('sparks'); c.innerHTML = '';
-  const cols = ['#c8a45a','#e2c07a','#f5dda0','#d4621a','#fff8e7'];
-  const cx = window.innerWidth/2, cy = window.innerHeight/2;
-  for (let i=0; i<32; i++) {
-    const s = document.createElement('div'); s.className='spark';
-    const ang=(i/32)*Math.PI*2, dist=70+Math.random()*160;
-    Object.assign(s.style,{left:cx+'px',top:cy+'px',background:cols[i%cols.length],
+
+function spawnSparks(){
+  const c=document.getElementById('sparks');c.innerHTML='';
+  const cols=['#c8a45a','#e2c07a','#f5dda0','#d4621a','#fff8e7'];
+  const cx=window.innerWidth/2,cy=window.innerHeight/2;
+  for(let i=0;i<32;i++){
+    const s=document.createElement('div');s.className='spark';
+    const angle=(i/32)*Math.PI*2,dist=70+Math.random()*160;
+    Object.assign(s.style,{
+      left:cx+'px',top:cy+'px',
+      background:cols[i%cols.length],
       width:(2+Math.random()*5)+'px',height:(2+Math.random()*5)+'px',
-      '--tx':(Math.cos(ang)*dist)+'px','--ty':(Math.sin(ang)*dist)+'px',
-      '--dur':(.7+Math.random()*.7)+'s','--del':(Math.random()*.25)+'s'});
+      '--tx':(Math.cos(angle)*dist)+'px',
+      '--ty':(Math.sin(angle)*dist)+'px',
+      '--dur':(.7+Math.random()*.7)+'s',
+      '--del':(Math.random()*.25)+'s',
+    });
     c.appendChild(s);
   }
 }
 
-/* ═══ MAPS ═══ */
-function openMaps(e) { e.preventDefault(); document.getElementById('mapsModal').classList.add('show'); }
+/* ════════ MAPS ════════ */
+function openMaps(e){
+  e.preventDefault();
+  const modal=document.getElementById('mapsModal');
+  modal.style.display='flex';
+}
+document.getElementById('mapsModal').addEventListener('click',function(e){
+  if(e.target===this)this.style.display='none';
+});
 
-/* ═══ TOAST ═══ */
+/* ════════ TOAST ════════ */
 let toastTm;
-function showToast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTm); toastTm=setTimeout(()=>t.classList.remove('show'),2300);
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.classList.add('show');clearTimeout(toastTm);
+  toastTm=setTimeout(()=>t.classList.remove('show'),2300);
 }
 
-/* ═══ RIPPLE ═══ */
-function addRipple(btn,e) {
-  const r=document.createElement('span'); r.className='rpl';
-  const rect=btn.getBoundingClientRect(), size=Math.max(btn.offsetWidth,btn.offsetHeight)*2;
+/* ════════ RIPPLE ════════ */
+function addRipple(btn,e){
+  const r=document.createElement('span');r.className='rpl';
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(btn.offsetWidth,btn.offsetHeight)*2;
   const x=e?e.clientX-rect.left-size/2:btn.offsetWidth/2-size/2;
   const y=e?e.clientY-rect.top-size/2:btn.offsetHeight/2-size/2;
   Object.assign(r.style,{width:size+'px',height:size+'px',left:x+'px',top:y+'px'});
-  btn.appendChild(r); setTimeout(()=>r.remove(),600);
+  btn.appendChild(r);setTimeout(()=>r.remove(),600);
 }
 
-/* ═══ HELPERS ═══ */
-function gw(n) { return n===1?'гостя':'гостей'; }
+/* ════════ HELPERS ════════ */
+function gw(n){return n===1?'гостя':'гостей'}
 
-/* ═══ INIT ═══ */
-window.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0];
-  const dateEl = document.getElementById('bDate');
-  dateEl.min = today; dateEl.value = today;
-  dateEl.addEventListener('change', loadBookedTimes);
+/* ════════ INIT ════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  const dateEl=document.getElementById('bDate');
+  dateEl.min=today;dateEl.value=today;
+  dateEl.addEventListener('change',()=>{selTime='';renderTimeGrid();});
 
-  initPhoneMask('bPhone');
-  initPhoneMask('searchPhone');
-  buildGuests();
-  loadMenu();
-  loadBookedTimes();
+  buildCats();buildMenu();renderTimeGrid();buildGuests();initPhoneMask();
 });
 </script>
 </body>
